@@ -216,3 +216,4 @@ postgres/data
 */dist-ssr
 */.local
 */.vscode
+*__pycache__/
