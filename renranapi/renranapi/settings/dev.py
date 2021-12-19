@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os
 import sys
+import datetime
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -193,8 +194,24 @@ LOGGING = {
 REST_FRAMEWORK = {
     # 异常处理
     'EXCEPTION_HANDLER': 'renranapi.utils.exceptions.custom_exception_handler',
+    # 认证方式
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 新增jwt认证，注意不能删除session认证，因我们后面的admin运营站点还是使用的session认证
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+}
+# jwt的配置选项
+JWT_AUTH = {
+    # jwt token的有效期，默认是7天
+    # 'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=3),
+    # 登录成功以后的自定义相应内容
+    # 'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',
 }
 
 # 自定义的用户模型类不能直接被Django的认证系统所识别，需要在配置文件中告知Django认证系统使用我们自定义的模型类
 # AUTH_USER_MODEL 参数的设置以点.来分隔，表示应用名.模型类名
 AUTH_USER_MODEL = 'users.User'
+
