@@ -216,4 +216,5 @@ postgres/data
 */dist-ssr
 */.local
 */.vscode
-*__pycache__/*
+*/__pycache__/*
+*/__pycache__/dev.cpython-38.pyc

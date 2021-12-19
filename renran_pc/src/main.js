@@ -30,6 +30,13 @@ axios.defaults.withCredentials = false;
 
 Vue.prototype.$axios = axios; // 把对象挂载vue中
 
+router.beforeEach((to,from,next)=>{
+    if(to.meta.title){
+        document.title=to.meta.title
+    }
+    next()
+})
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
