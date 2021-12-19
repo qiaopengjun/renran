@@ -1,6 +1,8 @@
 <template>
   <div class="sign">
-    <div class="logo"><router-link to="/"><img src="/static/image/nav-logo.png" alt="Logo"></router-link></div>
+    <div class="logo">
+      <router-link to="/"><img src="/static/image/nav-logo.png" alt="Logo"></router-link>
+    </div>
     <div class="main">
 
 
@@ -14,24 +16,21 @@
       <div class="js-sign-in-container">
         <form id="new_session" action="" method="post">
           <div class="input-prepend restyle js-normal">
-            <input placeholder="手机号或邮箱" type="text" name="session[email_or_mobile_number]"
-                   id="session_email_or_mobile_number">
+            <input placeholder="手机号或邮箱" type="text" v-model="username" id="session_email_or_mobile_number">
             <i class="iconfont ic-user"></i>
           </div>
-          <!-- 海外登录登录名输入框 -->
 
           <div class="input-prepend">
-            <input placeholder="密码" type="password" name="password" id="session_password">
+            <input placeholder="密码" type="password" v-model="password" id="session_password">
             <i class="iconfont ic-password"></i>
           </div>
           <div class="remember-btn">
-            <input type="checkbox" value="true" checked="checked" name="remember_me"
-                   id="session_remember_me"><span>记住我</span>
+            <input type="checkbox" v-model="remember_me" id="session_remember_me"><span>记住我</span>
           </div>
           <div class="forget-btn">
             <a class="" data-toggle="dropdown" href="">登录遇到问题?</a>
           </div>
-          <button class="sign-in-button" id="sign-in-form-submit-btn" type="button">
+          <button class="sign-in-button" id="sign-in-form-submit-btn" type="button" @click="loginhandler">
             <span id="sign-in-loading"></span>
             登录
           </button>
@@ -57,7 +56,98 @@
 
 <script>
 export default {
-  name: "Login"
+  name: "Login",
+  data() {
+    return {
+      username: "",
+      password: "",
+      remember_me: "", // 设置是否要记录登录状态
+    }
+  },
+  methods: {
+    show_captcha() {
+      // 显示验证码
+
+      // 判断手机号或者密码是否为空！
+      if (this.username.length < 1 || this.password.length < 1) {
+        // 阻止代码继续往下执行
+        return false;
+      }
+
+
+      var captcha1 = new TencentCaptcha(this.$settings.TC_captcha.app_id, res => {
+        // 用户操作验证码成功以后的回调函数，这个函数将会在对象创建以后，在页面那种进行监听用户的操作
+        // res就是用户操作成功以后，验证码服务器返回的内容
+        /**
+         res:
+         appid: "2086888489"  # 验证码的APPID
+         randstr: "@G0V"      # 随机字符串，防止重复
+         ret: 0               # 0表示用户操作成功，2表示用户主动关闭验证码窗口
+         ticket: ""           # 验证通过以后的票据，提供给python后端，将来到验证码服务器中进行
+         */
+        this.$axios.get(`${this.$settings.Host}/users/captcha/`, {
+          params: {
+            ticket: res.ticket,
+            randstr: res.randstr
+          }
+        }).then(response => {
+          if (response.data.detail) {
+            // 继续进行登录处理
+            this.loginhandler();
+          }
+        }).catch(error => {
+          this.$message.error("对不起，验证码校验不通过！");
+        });
+      });
+      captcha1.show(); // 显示验证码
+    },
+    loginhandler() {
+      // 登录处理
+      this.$axios.post(`${this.$settings.Host}/users/login/`, {
+        username: this.username,
+        password: this.password,
+      }).then(response => {
+        // 根据remember_me的值来保存登录状态到本地[vuex，本地存储]
+        if (this.remember_me) {
+          // 永久存储
+          localStorage.user_token = response.data.token;
+          localStorage.user_id = response.data.id;
+          localStorage.user_name = response.data.username;
+          localStorage.user_avatar = response.data.avatar;
+          sessionStorage.removeItem("user_token");
+          sessionStorage.removeItem("user_id");
+          sessionStorage.removeItem("user_name");
+          sessionStorage.removeItem("user_avatar");
+        } else {
+          // 临时存储
+          sessionStorage.user_token = response.data.token;
+          sessionStorage.user_id = response.data.id;
+          sessionStorage.user_name = response.data.username;
+          sessionStorage.user_avatar = response.data.avatar;
+          localStorage.removeItem("user_token");
+          localStorage.removeItem("user_id");
+          localStorage.removeItem("user_name");
+          localStorage.removeItem("user_avatar");
+        }
+        // 页面跳转
+        this.$confirm('是否跳转到个人中心', '登录成功', {
+          confirmButtonText: '个人中心',
+          cancelButtonText: '返回首页',
+          type: 'success'
+        }).then(() => {
+          // 前往个人中心
+          this.$router.push("/users");
+        }).catch(() => {
+          // 返回站点首页
+          this.$router.push("/");
+        });
+      }).catch(error => {
+        this.$message.error("登录失败！");
+        this.username = "";
+        this.password = "";
+      });
+    }
+  }
 }
 </script>
 

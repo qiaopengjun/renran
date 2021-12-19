@@ -206,9 +206,9 @@ REST_FRAMEWORK = {
 JWT_AUTH = {
     # jwt token的有效期，默认是7天
     # 'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
-    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=3),
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=1),
     # 登录成功以后的自定义相应内容
-    # 'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',
 }
 
 # 自定义的用户模型类不能直接被Django的认证系统所识别，需要在配置文件中告知Django认证系统使用我们自定义的模型类
