@@ -194,3 +194,7 @@ REST_FRAMEWORK = {
     # 异常处理
     'EXCEPTION_HANDLER': 'renranapi.utils.exceptions.custom_exception_handler',
 }
+
+# 自定义的用户模型类不能直接被Django的认证系统所识别，需要在配置文件中告知Django认证系统使用我们自定义的模型类
+# AUTH_USER_MODEL 参数的设置以点.来分隔，表示应用名.模型类名
+AUTH_USER_MODEL = 'users.User'

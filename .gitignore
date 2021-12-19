@@ -217,4 +217,4 @@ postgres/data
 */.local
 */.vscode
 */__pycache__/*
-*/__pycache__/dev.cpython-38.pyc
+renranapi/renranapi/settings/__pycache__/dev.cpython-38.pyc
