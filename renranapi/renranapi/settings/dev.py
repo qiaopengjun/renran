@@ -27,7 +27,8 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '0.0.0.0',
     '192.168.182.131',
-    '127.0.0.1'
+    '127.0.0.1',
+    'api.renran.cn'
 ]
 
 # Application definition
