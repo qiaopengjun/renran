@@ -21,6 +21,7 @@ class User(AbstractUser):
     wechat = models.CharField(max_length=100, null=True, unique=True, verbose_name="微信账号")
     alipay = models.CharField(max_length=100, null=True, unique=True, verbose_name="支付宝账号")
     qq_number = models.CharField(max_length=11, null=True, unique=True, verbose_name="QQ号")
+    # todo 增加昵称字段nickname
 
     class Meta:
         # 自定义表名

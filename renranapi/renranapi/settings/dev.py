@@ -127,9 +127,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+# LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-hans'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -215,3 +217,7 @@ JWT_AUTH = {
 # AUTH_USER_MODEL 参数的设置以点.来分隔，表示应用名.模型类名
 AUTH_USER_MODEL = 'users.User'
 
+# 告知Django使用我们自定义的认证后端
+AUTHENTICATION_BACKENDS = [
+    'users.utils.CustomAuthUserModelBackend',
+]
