@@ -221,3 +221,10 @@ AUTH_USER_MODEL = 'users.User'
 AUTHENTICATION_BACKENDS = [
     'users.utils.CustomAuthUserModelBackend',
 ]
+
+# 腾讯防水墙验证码配置
+TENCENT_CAPTCHA = {
+    "GATEWAY": "https://ssl.captcha.qq.com/ticket/verify",
+    "APPID": "2060272005",
+    "App_Secret_Key": "05VYXEWy5u8qALeC8BexUOA**",
+}

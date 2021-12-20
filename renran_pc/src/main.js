@@ -30,6 +30,9 @@ axios.defaults.withCredentials = false;
 
 Vue.prototype.$axios = axios; // 把对象挂载vue中
 
+// 导入防水墙验证码的核心js文件
+import "../static/js/TCaptcha"
+
 router.beforeEach((to,from,next)=>{
     if(to.meta.title){
         document.title=to.meta.title
