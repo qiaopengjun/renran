@@ -67,13 +67,11 @@ export default {
   methods: {
     show_captcha() {
       // 显示验证码
-
       // 判断手机号或者密码是否为空！
       if (this.username.length < 1 || this.password.length < 1) {
         // 阻止代码继续往下执行
         return false;
       }
-
 
       let captcha1 = new TencentCaptcha(this.$settings.TC_captcha.app_id, res => {
         // 用户操作验证码成功以后的回调函数，这个函数将会在对象创建以后，在页面那种进行监听用户的操作
