@@ -76,8 +76,86 @@ export default {
       }
     }
   },
+  methods: {
+    show_captcha() {
+      // 显示验证码
 
+      // 判断手机号或者密码是否为空！
+      if (this.mobile.length < 1 || this.password.length < 1) {
+        // 阻止代码继续往下执行
+        this.$message.error("手机号码或密码不能为空！");
+        return false;
+      }
 
+      if (this.nickname.length < 1 || this.sms_code.length < 1) {
+        // 阻止代码继续往下执行
+        this.$message.error("昵称或短信验证码不能为空！");
+        return false;
+      }
+
+      var captcha1 = new TencentCaptcha(this.$settings.TC_captcha.app_id, res => {
+        // 用户操作验证码成功以后的回调函数，这个函数将会在对象创建以后，在页面那种进行监听用户的操作
+        // res就是用户操作成功以后，验证码服务器返回的内容
+        /**
+         res:
+         appid: "2086888489"  # 验证码的APPID
+         randstr: "@G0V"      # 随机字符串，防止重复
+         ret: 0               # 0表示用户操作成功，2表示用户主动关闭验证码窗口
+         ticket: ""           # 验证通过以后的票据，提供给python后端，将来到验证码服务器中进行
+         */
+        this.$axios.get(`${this.$settings.Host}/users/captcha/`, {
+          params: {
+            ticket: res.ticket,
+            randstr: res.randstr
+          }
+        }).then(response => {
+          if (response.data.detail) {
+            // 继续进行注册处理
+            this.registerhandler();
+          }
+        }).catch(error => {
+          this.$message.error("对不起，验证码校验不通过！");
+        });
+      });
+      captcha1.show(); // 显示验证码
+    },
+    registerhandler() {
+      // 注册处理
+      this.$axios.post(`${this.$settings.Host}/users/`, {
+        nickname: this.nickname,
+        mobile: this.mobile,
+        sms_code: this.sms_code,
+        password: this.password,
+      }).then(response => {
+        // 注册成功，默认已经登录，所以我们这里临时保存登录状态
+        sessionStorage.user_token = response.data.token;
+        sessionStorage.user_id = response.data.id;
+        sessionStorage.user_name = response.data.username;
+        sessionStorage.user_avatar = null;
+        localStorage.removeItem("user_token");
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("user_name");
+        localStorage.removeItem("user_avatar");
+
+        // 页面跳转
+        this.$confirm('是否跳转到个人中心', '注册成功', {
+          confirmButtonText: '个人中心',
+          cancelButtonText: '返回首页',
+          type: 'success'
+        }).then(() => {
+          // 前往个人中心
+          this.$router.push("/users");
+        }).catch(() => {
+          // 返回站点首页
+          this.$router.push("/");
+        });
+
+      }).catch(error => {
+        // 注册失败！
+        this.$message.error("注册用户失败！");
+      })
+    }
+  }
 }
 </script>
 
