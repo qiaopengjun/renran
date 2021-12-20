@@ -6,6 +6,9 @@ from rest_framework import status
 from django.conf import settings
 from urllib.parse import urlencode  # urllib python内置的标准模块，用于发送http请求，类似vue里面的axios
 from urllib.request import urlopen
+from rest_framework.generics import CreateAPIView
+from .models import User
+from .serializers import UserModelSerializer
 
 
 # Create your views here.
@@ -45,3 +48,9 @@ class CaptchaAPIView(APIView):
         else:
             # 验证失败
             return Response({"detail": 0}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserAPIView(CreateAPIView):
+    """用户信息"""
+    queryset = User.objects.all()
+    serializer_class = UserModelSerializer

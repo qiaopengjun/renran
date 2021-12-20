@@ -16,12 +16,12 @@ class 模型类(models.Model):
 
 
 class User(AbstractUser):
+    nickname = models.CharField(max_length=20, null=True, verbose_name="用户昵称")
     mobile = models.CharField(max_length=15, unique=True, verbose_name="手机号")
     avatar = models.ImageField(upload_to="avatar", null=True, verbose_name="头像")
     wechat = models.CharField(max_length=100, null=True, unique=True, verbose_name="微信账号")
     alipay = models.CharField(max_length=100, null=True, unique=True, verbose_name="支付宝账号")
     qq_number = models.CharField(max_length=11, null=True, unique=True, verbose_name="QQ号")
-    # todo 增加昵称字段nickname
 
     class Meta:
         # 自定义表名
@@ -30,4 +30,4 @@ class User(AbstractUser):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.username if self.username else "暂无"
+        return self.nickname if self.nickname else self.username
