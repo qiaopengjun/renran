@@ -4,8 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.conf import settings
-# urllib python内置的标准模块，用于发送http请求，类似vue里面的axios
-from urllib.parse import urlencode
+from urllib.parse import urlencode  # urllib python内置的标准模块，用于发送http请求，类似vue里面的axios
 from urllib.request import urlopen
 
 
@@ -38,6 +37,7 @@ class CaptchaAPIView(APIView):
 
         # f.read() 读取响应信息
         content = f.read()
+        # json.loads()函数是将json格式数据转换为字典（可以这么理解，json.loads()函数是将字符串转化为字典）
         res = json.loads(content)
         if int(res.get("response")) == 1:
             # 验证成功

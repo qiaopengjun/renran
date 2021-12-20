@@ -4,8 +4,6 @@
       <router-link to="/"><img src="/static/image/nav-logo.png" alt="Logo"></router-link>
     </div>
     <div class="main">
-
-
       <h4 class="title">
         <div class="normal-title">
           <router-link class="active" to="/login">登录</router-link>
@@ -49,7 +47,6 @@
           </ul>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -82,7 +79,7 @@ export default {
          appid: "2060272005"  # 验证码的APPID
          randstr: "@MUJ"     # 随机字符串，防止重复
          ret: 0               # 0表示用户操作成功，2表示用户主动关闭验证码窗口
-         ticket: "t03_4wtnnQ7MsLfeAco_upIuHD66ns-H7FarNrXrtLRJmaRCmEjPV4pn6-BG5OviT34DNZfhEOeLC9QbX-dbp7XQgaS3vEUR0uXwaM_bMDnsuFquYl7UoVZhA**"  # 验证通过以后的票据，提供给python后端，将来到验证码服务器中进行
+         ticket: ""  # 验证通过以后的票据，提供给python后端，将来到验证码服务器中进行
          */
         this.$axios.get(`${this.$settings.Host}/users/captcha/`, {
           params: {
