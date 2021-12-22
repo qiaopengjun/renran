@@ -25,8 +25,8 @@
           <div class="input-prepend restyle no-radius security-up-code js-security-number" v-if="is_show_sms_code">
             <input type="text" v-model="sms_code" id="sms_code" placeholder="手机验证码">
             <i class="iconfont ic-verify"></i>
-            <a tabindex="-1" class="btn-up-resend js-send-code-button disable" href="javascript:void(0);"
-               id="send_code">{{ sms_code_text }}</a>
+            <a tabindex="-1" class="btn-up-resend js-send-code-button" href="javascript:void(0);" id="send_code"
+               @click.stop.prevent="send_sms">{{ sms_code_text }}</a>
           </div>
           <input type="hidden" name="security_number" id="security_number">
           <div class="input-prepend">
@@ -154,6 +154,19 @@ export default {
         // 注册失败！
         this.$message.error("注册用户失败！");
       })
+    },
+    send_sms() {
+      // 发送短信
+      if (this.mobile.length < 1) {
+        this.$message.error("对不起,手机号码不能为空!");
+        return false;
+      }
+
+      this.$axios.get(`${this.$settings.Host}/users/sms/${this.mobile}/`).then(response => {
+        this.$message.info(response.data.detail);
+      }).catch(error => {
+        this.$message.error("短信发送错误!请联系客服工作人员!");
+      });
     }
   }
 }
