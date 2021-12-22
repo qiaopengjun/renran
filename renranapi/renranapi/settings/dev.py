@@ -106,6 +106,40 @@ DATABASES = {
     }
 }
 
+# 设置redis缓存
+CACHES = {
+    # 默认缓存
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        # 项目上线时,需要调整这里的路径
+        "LOCATION": "redis://127.0.0.1:6379/0",
+
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    # 提供给xadmin或者admin的session存储
+    "session": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    # 提供存储短信验证码
+    "sms_code":{
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/2",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+# 设置xadmin用户登录时,登录信息session保存到redis
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "session"
+
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
@@ -227,4 +261,16 @@ TENCENT_CAPTCHA = {
     "GATEWAY": "https://ssl.captcha.qq.com/ticket/verify",
     "APPID": "2060272005",
     "App_Secret_Key": "05VYXEWy5u8qALeC8BexUOA**",
+}
+
+# 短信配置
+SMS = {
+    # 容联云通讯分配的主账号ID
+    "accId": '8aaf07087ce03b67017d141ad4380ba6',
+    # 容联云通讯分配的主账号TOKEN
+    "accToken": 'b3f15b8095b34862b4e9f82c234ae477',
+    # 容联云通讯分配的应用ID
+    "appId": '8aaf07087ce03b67017d141ad5610bad',
+    # 容联云通讯创建的模板,1表示使用测试模板
+    "tid": 1
 }
