@@ -14,6 +14,8 @@ from django_redis import get_redis_connection
 from ronglian_sms_sdk import SmsSDK
 from django.conf import settings
 from renranapi.settings import constants
+# 1. 声明一个和celery一模一样的任务函数，但是我们可以导包来解决
+from mycelery.sms.tasks import send_sms
 
 logger = logging.getLogger("django")
 
@@ -94,14 +96,18 @@ class SMSAPIView(APIView):
 
         # 发送短信
         # 实例化短信接口SDK对象
-        sdk = SmsSDK(settings.SMS["accId"], settings.SMS["accToken"], settings.SMS["appId"])
-        # 短信模板中的数据: 测试模板格式: 云通讯】您的验证码是{1}，请于{2}分钟内正确输入。
-        datas = (sms_code, constants.SMS_EXPIRE_TIME // 60)
-        resp = sdk.sendMessage(settings.SMS["tid"], mobile, datas)
-        resp = json.loads(resp)
-        if resp.get("statusCode") != "000000":
-            # 记录错误信息
-            logger.error("发送短信失败!手机号:%s" % mobile)
+        # sdk = SmsSDK(settings.SMS["accId"], settings.SMS["accToken"], settings.SMS["appId"])
+        # # 短信模板中的数据: 测试模板格式: 云通讯】您的验证码是{1}，请于{2}分钟内正确输入。
+        # datas = (sms_code, constants.SMS_EXPIRE_TIME // 60)
+        # resp = sdk.sendMessage(settings.SMS["tid"], mobile, datas)
+        # resp = json.loads(resp)
+        # if resp.get("statusCode") != "000000":
+        #     # 记录错误信息
+        #     logger.error("发送短信失败!手机号:%s" % mobile)
+
+        # 2. 调用任务函数，发布任务
+        send_sms.delay(mobile=mobile, sms_code=sms_code)
+        # send_sms.delay() 如果调用的任务函数没有参数，则不需要填写任何内容
 
         # 返回响应信息
         return Response({"detail": "短信已发送!请留意您的手机短信!"})
