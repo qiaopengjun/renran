@@ -14,7 +14,9 @@ from django_redis import get_redis_connection
 from ronglian_sms_sdk import SmsSDK
 from django.conf import settings
 from renranapi.settings import constants
+
 logger = logging.getLogger("django")
+
 
 # Create your views here.
 class CaptchaAPIView(APIView):
@@ -103,3 +105,12 @@ class SMSAPIView(APIView):
 
         # 返回响应信息
         return Response({"detail": "短信已发送!请留意您的手机短信!"})
+
+
+class MobileAPIView(APIView):
+    def get(self, request, mobile):
+        try:
+            User.objects.get(mobile=mobile)
+            return Response({"detail": "当前手机号码已经被注册"}, status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            return Response({"detail": "ok"})

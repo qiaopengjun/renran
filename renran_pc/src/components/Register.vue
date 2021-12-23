@@ -70,13 +70,25 @@ export default {
   watch: {
     mobile() {
       if (/^1[3-9]\d{9}$/.test(this.mobile)) {
-        this.is_show_sms_code = true;
+        // 发送ajax请求到服务器验证手机号是否已经注册了
+        this.check_mobile();
+        // this.is_show_sms_code = true;
       } else {
         this.is_show_sms_code = false;
       }
     }
   },
   methods: {
+    check_mobile() {
+      // 验证手机是否已经被注册了
+      this.$axios.get(`${this.$settings.Host}/users/mobile/${this.mobile}/`).then(response => {
+        console.log(response.data);
+        this.is_show_sms_code = true;  // 显示短信验证码框
+      }).catch(error => {
+        this.$message.error("对不起,手机号码已经被注册了!");
+        this.is_show_sms_code = false; // 关闭短信验证码框
+      })
+    },
     show_captcha() {
       // 显示验证码
 
