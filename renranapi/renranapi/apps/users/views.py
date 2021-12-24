@@ -18,6 +18,7 @@ from renranapi.settings import constants
 from mycelery.sms.tasks import send_sms
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadData
 from django.core.mail import send_mail
+from mycelery.email.tasks import send_email
 
 logger = logging.getLogger("django")
 
@@ -157,9 +158,10 @@ class ResetPasswordAPIView(APIView):
         # subject 邮件标题 message 普通邮件正文， 普通字符串
         # from_email 发件人
         # html_message 多媒体邮件正文，可以是html字符串
-        send_mail(subject='找回密码', message='', from_email=settings.EMAIL_FROM, recipient_list=['1746259155@qq.com'],
-                  html_message='<a href="%s" target="_blank">重置密码</a>' % url)
-        # send_email.delay([email], url)
+        # send_mail(subject='找回密码', message='', from_email=settings.EMAIL_FROM, recipient_list=['1746259155@qq.com'],
+        #           html_message='<a href="%s" target="_blank">重置密码</a>' % url)
+        email = '1746259155@qq.com'
+        send_email.delay([email], url)
 
         return Response("邮件已经发送，请留意您的邮箱")
 
