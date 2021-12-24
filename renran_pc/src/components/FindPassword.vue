@@ -1,150 +1,92 @@
 <template>
   <div class="sign">
-    <div class="logo">
-      <router-link to="/"><img src="/static/image/nav-logo.png" alt="Logo"></router-link>
-    </div>
+    <div class="logo"><a href="/"><img src="/static/image/nav-logo.png" alt="Logo"></a></div>
     <div class="main">
-      <h4 class="title">
-        <div class="normal-title">
-          <router-link class="active" to="/user/login">登录</router-link>
-          <b>·</b>
-          <router-link id="js-sign-up-btn" class="" to="/user/register">注册</router-link>
-        </div>
-      </h4>
+
+
+      <h4 class="reset-title">用邮箱重置密码</h4>
       <div class="js-sign-in-container">
         <form id="new_session" action="" method="post">
           <div class="input-prepend restyle js-normal">
-            <input placeholder="手机号或邮箱" type="text" v-model="username" id="session_email_or_mobile_number">
-            <i class="iconfont ic-user"></i>
+            <input placeholder="请输入注册或绑定的邮箱" type="text" v-model="email">
+            <i class="iconfont ic-email"></i>
           </div>
-
-          <div class="input-prepend">
-            <input placeholder="密码" type="password" v-model="password" id="session_password">
-            <i class="iconfont ic-password"></i>
-          </div>
-          <div class="remember-btn">
-            <input type="checkbox" v-model="remember_me" id="session_remember_me"><span>记住我</span>
-          </div>
-          <div class="forget-btn">
-            <router-link class="" data-toggle="dropdown" to="/find_password">登录遇到问题?</router-link>
-<!--            <a class="" data-toggle="dropdown" href="">登录遇到问题?</a>-->
-          </div>
-          <button class="sign-in-button" id="sign-in-form-submit-btn" type="button" @click="show_captcha">
-            <span id="sign-in-loading"></span>
-            登录
+          <button class="sign-in-button" type="button" @click.prevent="show_captcha">
+            <span id="sign-in-loading"></span>发送邮件
           </button>
         </form>
-        <!-- 更多登录方式 -->
-        <div class="more-sign">
-          <h6>社交帐号登录</h6>
-          <ul>
-            <li id="weibo-link-wrap" class="">
-              <a class="weibo" id="weibo-link">
-                <i class="iconfont ic-weibo"></i>
-              </a>
-            </li>
-            <li><a id="weixin" class="weixin" target="_blank" href=""><i class="iconfont ic-wechat"></i></a></li>
-            <li><a id="qq" class="qq" target="_blank" href=""><i class="iconfont ic-qq_connect"></i></a></li>
-          </ul>
-        </div>
       </div>
+
     </div>
   </div>
 </template>
 
 <script>
+import "../../static/js/TCaptcha";
+
 export default {
-  name: "Login",
+  name: "FindPassword",
   data() {
     return {
-      username: "",
+      email: "",
       password: "",
-      remember_me: "", // 设置是否要记录登录状态
     }
   },
   methods: {
-    show_captcha() {
-      // 显示验证码
-      // 判断手机号或者密码是否为空！
-      if (this.username.length < 1 || this.password.length < 1) {
-        // 阻止代码继续往下执行
+    send_email() {
+      if (!/^\w+@\w+\.\w+$/.test(this.email)) {
+        this.$message.error("邮箱地址格式有误！");
         return false;
       }
 
-      let captcha1 = new TencentCaptcha(this.$settings.TC_captcha.app_id, res => {
-        // 用户操作验证码成功以后的回调函数，这个函数将会在对象创建以后，在页面那种进行监听用户的操作
-        // res就是用户操作成功以后，验证码服务器返回的内容
-        console.log(res)
-        /**
-         res:
-         appid: "2060272005"  # 验证码的APPID
-         randstr: "@MUJ"     # 随机字符串，防止重复
-         ret: 0               # 0表示用户操作成功，2表示用户主动关闭验证码窗口
-         ticket: ""  # 验证通过以后的票据，提供给python后端，将来到验证码服务器中进行
-         */
-        this.$axios.get(`${this.$settings.Host}/users/captcha/`, {
+      this.$axios.get(this.$settings.Host + "/users/find/password/",
+        {
           params: {
-            ticket: res.ticket,
-            randstr: res.randstr
+            email: this.email,
           }
         }).then(response => {
-          if (response.data.detail) {
-            // 继续进行登录处理
-            this.loginhandler();
-          }
-        }).catch(error => {
-          this.$message.error("对不起，验证码校验不通过！");
-        });
-      });
-      captcha1.show(); // 显示验证码
-    },
-    loginhandler() {
-      // 登录处理
-      this.$axios.post(`${this.$settings.Host}/users/login/`, {
-        username: this.username,
-        password: this.password,
-      }).then(response => {
-        // 根据remember_me的值来保存登录状态到本地[vuex，本地存储]
-        if (this.remember_me) {
-          // 永久存储
-          localStorage.user_token = response.data.token;
-          localStorage.user_id = response.data.id;
-          localStorage.user_name = response.data.username;
-          localStorage.user_avatar = response.data.avatar;
-          sessionStorage.removeItem("user_token");
-          sessionStorage.removeItem("user_id");
-          sessionStorage.removeItem("user_name");
-          sessionStorage.removeItem("user_avatar");
-        } else {
-          // 临时存储
-          sessionStorage.user_token = response.data.token;
-          sessionStorage.user_id = response.data.id;
-          sessionStorage.user_name = response.data.username;
-          sessionStorage.user_avatar = response.data.avatar;
-          localStorage.removeItem("user_token");
-          localStorage.removeItem("user_id");
-          localStorage.removeItem("user_name");
-          localStorage.removeItem("user_avatar");
-        }
-        // 页面跳转
-        this.$confirm('是否跳转到个人中心', '登录成功', {
-          confirmButtonText: '个人中心',
-          cancelButtonText: '返回首页',
-          type: 'success'
-        }).then(() => {
-          // 前往个人中心
-          this.$router.push("/users");
-        }).catch(() => {
-          // 返回站点首页
-          this.$router.push("/");
-        });
+        this.$message.success(response.data);
       }).catch(error => {
-        this.$message.error("登录失败！");
-        this.username = "";
-        this.password = "";
+        this.$message.error("发送邮件失败！");
+
+      })
+    },
+    show_captcha() {
+      // 判断手机号或者密码是否为空！
+      if (this.email.length < 1) {
+        return false; // 阻止代码继续往下执行
+      }
+
+      // 验证码
+      let self = this;
+      // 生成一个验证码对象
+      var captcha1 = new TencentCaptcha(this.$settings.TC_captcha.app_id, function (res) {
+        console.log(res);
+        // res（未通过验证）= {ret: 1, ticket: null}
+
+        // ticket	验证成功的票据，当且仅当ret=0时ticket有值
+        // res（验证成功） = {ret: 0, ticket: "String", randstr: "String"}
+        if (res.ret === 0) {
+          // 随机码
+          // api服务端校验验证码的结果
+          self.$axios.get(`${self.$settings.Host}/users/captcha/`, {
+            params: {
+              ticket: res.ticket,
+              randstr: res.randstr,
+            }
+          }).then(response => {
+            // 进行登录处理
+            self.send_email();
+          }).catch(error => {
+            self.$message.error("验证码校验错误！");
+          })
+        }
       });
+
+      // 显示验证码
+      captcha1.show();
     }
-  }
+  },
 }
 </script>
 

@@ -16,6 +16,8 @@ from django.conf import settings
 from renranapi.settings import constants
 # 1. 声明一个和celery一模一样的任务函数，但是我们可以导包来解决
 from mycelery.sms.tasks import send_sms
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadData
+from django.core.mail import send_mail
 
 logger = logging.getLogger("django")
 
@@ -26,6 +28,13 @@ class CaptchaAPIView(APIView):
 
     def get(self, request):
         """接受客户端提交的验证码相关信息"""
+        """验证码的验证结果校验"""
+        # AppSecretKey = settings.TENCENT_CAPTCHA["App_Secret_Key"]
+        # appid = settings.TENCENT_CAPTCHA["APPID"]
+        # Ticket = request.query_params.get("ticket")
+        # Randstr = request.query_params.get("randstr")
+        # UserIP = request._request.META.get("REMOTE_ADDR")
+        # print("用户ID地址：%s" % UserIP)
         params = {
             "aid": settings.TENCENT_CAPTCHA.get("APPID"),
             "AppSecretKey": settings.TENCENT_CAPTCHA.get("App_Secret_Key"),
@@ -120,3 +129,83 @@ class MobileAPIView(APIView):
             return Response({"detail": "当前手机号码已经被注册"}, status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
             return Response({"detail": "ok"})
+
+
+class ResetPasswordAPIView(APIView):
+    def get(self, request):
+        """发送找回密码的链接地址"""
+
+        # 检测用户是否存在
+        email = request.query_params.get("email")
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response("当前邮箱对应的用户不存在！", status=status.HTTP_400_BAD_REQUEST)
+
+        # 生成找回密码的链接
+        """加密"""
+        # serializer = Serializer(秘钥, 加密数据的有效期(秒))
+        serializer = Serializer(settings.SECRET_KEY, constants.DATA_SIGNATURE_EXPIRE)
+        # dumps的返回值是加密书的bytes信息
+        # serializer.dumps(数据), 返回bytes类型
+        access_token = serializer.dumps({"email": email}).decode()
+
+        url = settings.CLIENT_HOST + "/reset_password?access_token=" + access_token
+
+        # 使用dango提供的email发送邮件
+        # recipient_list 收件人列表
+        # subject 邮件标题 message 普通邮件正文， 普通字符串
+        # from_email 发件人
+        # html_message 多媒体邮件正文，可以是html字符串
+        send_mail(subject='找回密码', message='', from_email=settings.EMAIL_FROM, recipient_list=['1746259155@qq.com'],
+                  html_message='<a href="%s" target="_blank">重置密码</a>' % url)
+        # send_email.delay([email], url)
+
+        return Response("邮件已经发送，请留意您的邮箱")
+
+    def post(self, request):
+        # 验证邮箱链接地址中的access_token是否正确并在有效期时间范围内
+        access_token = request.data.get("access_token")
+        # 检验token
+        # 验证失败，会抛出itsdangerous.BadData异常
+        serializer = Serializer(settings.SECRET_KEY, constants.DATA_SIGNATURE_EXPIRE)
+        try:
+            data = serializer.loads(access_token)
+            return Response({"email": data.get("email")})
+        except BadData:
+            # access_token过期或者错误
+            return Response("重置密码的邮件已过期或者邮件地址有误！", status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request):
+        # 重置密码
+        # 再次从access_token获取用户信息
+        access_token = request.data.get("access_token")
+        password = request.data.get("password")
+        password2 = request.data.get("password2")
+
+        # 判断密码和确认密码是否一致
+        if len(password) < 6 or len(password) > 16:
+            return Response("密码长度有误！", status=status.HTTP_400_BAD_REQUEST)
+
+        if password != password2:
+            return Response("密码和确认密码不一致！", status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = Serializer(settings.SECRET_KEY, constants.DATA_SIGNATURE_EXPIRE)
+        try:
+            data = serializer.loads(access_token)
+        except BadData:
+            # access_token过期或者错误
+            return Response("重置密码的邮件已过期或者邮件地址有误！", status=status.HTTP_400_BAD_REQUEST)
+
+        email = data.get('email')
+        # 获取用户信息
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response("重置密码失败！邮箱地址有误！", status=status.HTTP_400_BAD_REQUEST)
+
+        # 修改密码
+        user.set_password(password)
+        user.save()
+
+        return Response("重置密码成功！")
