@@ -19,4 +19,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include("users.urls")),  # include 的值必须是 模块名.urls 格式,字符串中间只能出现一个圆点
+    path('oauth/', include("oauth.urls")),
 ]

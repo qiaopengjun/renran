@@ -47,8 +47,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'corsheaders',
+    'rest_framework',
 
     'users',
+    'oauth',
 ]
 
 # CORS组的配置信息
@@ -287,3 +289,11 @@ EMAIL_HOST_PASSWORD = 'EWUOSFRMTZUPBESP'  # zwisiplqfdeabjcc
 EMAIL_FROM = 'renran<17260808696@163.com>'
 
 CLIENT_HOST = "http://www.moluo.net:8080"
+
+# QQ登录配置参数
+QQ_CONNECT = {
+    "app_id": "101403367",
+    "app_key": "93112df14c10d6fde74baa62f5de95ab",
+    "redirect_uri": "http://www.moluo.net:8080/oauth_callback.html",
+    "state": "/",  # 用于保存登录成功后的跳转页面路径,查询字符串的参数信息,
+}
