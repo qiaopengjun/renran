@@ -53,6 +53,7 @@ class QQUserLoginViewSet(ViewSet):
 
         except OauthUser.DoesNotExist:
             """表示当前用户没有进行QQ登录绑定,则让客户端显示绑定QQ和用户信息的表单页面"""
+            pass
 
         # 5. 根据数据库查询结果返回登录状态或者进行QQ与用户信息绑定流程
         return Response({

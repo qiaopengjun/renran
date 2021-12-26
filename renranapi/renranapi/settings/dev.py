@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 
     'users',
     'oauth',
+    'home',
 ]
 
 # CORS组的配置信息
@@ -171,12 +172,24 @@ TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = True  # 启动时区转换
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+# STATIC_URL = 'static/'
+
+# 访问静态文件的url地址前缀
+STATIC_URL = '/static/'
+# 设置django的静态文件目录
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static")
+]
+
+# 项目中存储上传文件的根目录[暂时配置]，注意，uploads目录需要手动创建否则上传文件时报错
+MEDIA_ROOT = os.path.join(BASE_DIR, "uploads")
+# 访问上传文件的url地址前缀
+MEDIA_URL = "/media/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -298,3 +311,4 @@ QQ_CONNECT = {
     "redirect_uri": "http://www.moluo.net:8080/oauth_callback.html",
     "state": "/",  # 用于保存登录成功后的跳转页面路径,查询字符串的参数信息,
 }
+
