@@ -7,8 +7,10 @@
           <!-- Banner -->
           <div class="banner">
             <el-carousel height="272px" indicator-position="none" :interval="2000">
-              <el-carousel-item v-for="item in 4" :key="item">
-                <h3 class="small">{{ item }}</h3>
+              <el-carousel-item v-for="item in banner_list" :key="item">
+<!--                <h3 class="small">{{ item }}</h3>-->
+                <a :href="item.link" v-if="item.is_http"><img :src="item.image" alt=""></a>
+                <router-link :to="item.link" v-else><img :src="item.image" alt=""></router-link>
               </el-carousel-item>
             </el-carousel>
           </div>
@@ -102,7 +104,22 @@ import Footer from "./common/Footer";
 export default {
   name: "Home",
   data() {
-    return {}
+    return {
+      banner_list: [],
+    }
+  },
+  created() {
+    this.get_banner()
+  },
+  methods: {
+    get_banner() {
+      this.$axios.get(`${this.$settings.Host}/banner/`).then(response => {
+        this.banner_list = response.data
+      }).catch(error => {
+          this.$message.error("网络异常，无法获取轮播图内容！")
+        }
+      )
+    }
   },
   components: {
     Header,
