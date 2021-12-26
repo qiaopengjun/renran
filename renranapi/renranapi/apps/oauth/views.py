@@ -76,6 +76,25 @@ class QQUserLoginViewSet(ViewSet):
             """绑定账号和QQ"""
             return self._qq_user_bind(request, user)
 
+    def qq_user_register(self, request):
+        """游客注册账号和QQ进行绑定"""
+        # 接收客户端提交
+        nickname = request.data.get("nickname")
+        mobile = request.data.get("mobile")
+        password = request.data.get("password")
+        sms_code = request.data.get("sms_code")
+
+        serializers = UserModelSerializer(data={
+            "nickname": nickname,
+            "mobile": mobile,
+            "password": password,
+            "sms_code": sms_code,
+        })
+
+        serializers.is_valid(raise_exception=True)
+        user = serializers.save()
+        return self._qq_user_bind(request, user)
+
     def _qq_user_bind(self, request, user):
         """平台账号绑定QQ信息"""
         access_token = request.data.get("access_token")

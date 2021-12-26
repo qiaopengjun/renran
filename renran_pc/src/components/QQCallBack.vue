@@ -315,7 +315,7 @@ export default {
           duration: 2000,
           message: "QQ登录失败!请尝试其他登录方式,页面跳转中....",
           onClose() {
-            self.$router.push("/login");
+            self.$router.push("/user/login");
           }
         });
       })
