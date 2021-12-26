@@ -39,6 +39,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -121,7 +122,7 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
-    # 提供给xadmin或者admin的session存储
+    # 提供给admin或者admin的session存储
     "session": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://127.0.0.1:6379/1",
@@ -130,7 +131,7 @@ CACHES = {
         }
     },
     # 提供存储短信验证码
-    "sms_code":{
+    "sms_code": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://127.0.0.1:6379/2",
         "OPTIONS": {
@@ -139,7 +140,7 @@ CACHES = {
     }
 }
 
-# 设置xadmin用户登录时,登录信息session保存到redis
+# 设置admin用户登录时,登录信息session保存到redis
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "session"
 
@@ -173,6 +174,7 @@ TIME_ZONE = 'Asia/Shanghai'
 USE_I18N = True
 
 USE_TZ = True  # 启动时区转换
+# USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
@@ -311,4 +313,5 @@ QQ_CONNECT = {
     "redirect_uri": "http://www.moluo.net:8080/oauth_callback.html",
     "state": "/",  # 用于保存登录成功后的跳转页面路径,查询字符串的参数信息,
 }
+
 

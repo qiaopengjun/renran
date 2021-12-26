@@ -14,8 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from rest_framework.documentation import include_docs_urls
+from django.conf import settings
+from django.views.static import serve
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,4 +25,5 @@ urlpatterns = [
     path('users/', include("users.urls")),  # include 的值必须是 模块名.urls 格式,字符串中间只能出现一个圆点
     path('oauth/', include("oauth.urls")),
     path('', include("home.urls")),
+    re_path(r'media/(?P<path>.*)', serve, {"document_root": settings.MEDIA_ROOT}),
 ]
