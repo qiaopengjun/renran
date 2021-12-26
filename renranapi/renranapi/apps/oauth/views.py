@@ -37,6 +37,7 @@ class QQUserLoginViewSet(ViewSet):
         # 4. 根据openid到数据库是否有QQ用户信息绑定记录
         try:
             qq_user = OauthUser.objects.get(name=1, openid=openid)
+            print(f"qq_user.user.username=={qq_user.user.username}")
             """表示当前用户已经和QQ进行登录绑定,生成jwt状态即可"""
             # 返回jwt登录状态
             from rest_framework_jwt.settings import api_settings
