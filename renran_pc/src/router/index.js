@@ -5,6 +5,7 @@ import Login from "../components/Login"
 import Register from "../components/Register"
 import FindPassword from "../components/FindPassword";
 import ResetPassword from "../components/ResetPassword";
+import QQCallBack from "../components/QQCallBack"
 
 Vue.use(Router)
 
@@ -61,6 +62,15 @@ export default new Router({
       path: "/reset_password",
       name: "ResetPassword",
       component: ResetPassword,
+    },
+    {
+      meta: {
+        title: "荏苒项目-QQ登录的回调页面", //配置title
+        keepAlive: true //是否缓存
+      },
+      path: '/oauth_callback.html',
+      name: "QQCallBack",
+      component: QQCallBack,
     },
   ]
 })

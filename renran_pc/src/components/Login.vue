@@ -27,7 +27,7 @@
           </div>
           <div class="forget-btn">
             <router-link class="" data-toggle="dropdown" to="/find_password">登录遇到问题?</router-link>
-<!--            <a class="" data-toggle="dropdown" href="">登录遇到问题?</a>-->
+            <!--            <a class="" data-toggle="dropdown" href="">登录遇到问题?</a>-->
           </div>
           <button class="sign-in-button" id="sign-in-form-submit-btn" type="button" @click="show_captcha">
             <span id="sign-in-loading"></span>
@@ -44,7 +44,8 @@
               </a>
             </li>
             <li><a id="weixin" class="weixin" target="_blank" href=""><i class="iconfont ic-wechat"></i></a></li>
-            <li><a id="qq" class="qq" target="_blank" href=""><i class="iconfont ic-qq_connect"></i></a></li>
+            <li><a id="qq" class="qq" target="_blank" href="" @click.prevent.stop="qq_login"><i
+              class="iconfont ic-qq_connect"></i></a></li>
           </ul>
         </div>
       </div>
@@ -63,6 +64,16 @@ export default {
     }
   },
   methods: {
+    qq_login() {
+      // QQ登录跳转
+      this.$axios.get(`${this.$settings.Host}/oauth/qq/`).then(response => {
+        // 页面跳转
+        location.href = response.data;
+        // open(response.data,"_blank"); // 打开一个页面
+      }).catch(error => {
+        this.$message.error("对不起,QQ第三方登录暂时没有开通!");
+      })
+    },
     show_captcha() {
       // 显示验证码
       // 判断手机号或者密码是否为空！
