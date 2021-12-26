@@ -18,10 +18,26 @@ from django.urls import path, include, re_path
 from rest_framework.documentation import include_docs_urls
 from django.conf import settings
 from django.views.static import serve
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="接口文档平台",  # 必传
+        default_version="v1",  # 必传
+        description="文档描述",
+        contact=openapi.Contact(email="mhhcode@mhhcode.com"),
+        license=openapi.License(name="BSD LICENSE")
+    ),
+    public=True,
+    # permission_classes=(permissions,)  # 权限类
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('docs/', include_docs_urls(title="My api title")),
+    path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger"),
+    path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
     path('users/', include("users.urls")),  # include 的值必须是 模块名.urls 格式,字符串中间只能出现一个圆点
     path('oauth/', include("oauth.urls")),
     path('', include("home.urls")),
