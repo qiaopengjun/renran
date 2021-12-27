@@ -7,7 +7,7 @@
           <!-- Banner -->
           <div class="banner">
             <el-carousel height="272px" indicator-position="none" :interval="2000">
-              <el-carousel-item v-for="item in banner_list" :key="item">
+              <el-carousel-item v-for="(item,key) in banner_list" :key="key">
 <!--                <h3 class="small">{{ item }}</h3>-->
                 <a :href="item.link" v-if="item.is_http"><img :src="item.image" alt=""></a>
                 <router-link :to="item.link" v-else><img :src="item.image" alt=""></router-link>

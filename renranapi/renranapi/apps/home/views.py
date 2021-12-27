@@ -1,10 +1,9 @@
 from django.shortcuts import render
 from rest_framework.generics import ListAPIView
-from .models import Banner
-from .serializers import BannerModelSerializer
+from .models import Banner, Nav
+from .serializers import BannerModelSerializer, NavModelSerializer
 from renranapi.settings import constants
 from django.utils import timezone as datetime
-
 
 """
 注意：开发中绝对不能把当前时间now写在视图方法外面或者作为类属性的值,
@@ -32,3 +31,15 @@ class BannerListAPIView(ListAPIView):
             start_time__lte=datetime.now(),
             end_time__gte=datetime.now()
         ).order_by("orders", "id")[:constants.HOME_BANNER_LENGTH]
+
+
+class HeaderNavListAPIView(ListAPIView):
+    queryset = Nav.objects.filter(is_show=True, pid=None, is_deleted=False, position=1).order_by("orders", "id")[
+               :constants.HEADER_NAV_LENGTH]
+    serializer_class = NavModelSerializer
+
+
+class FooterNavListAPIView(ListAPIView):
+    queryset = Nav.objects.filter(is_show=True, pid=None, is_deleted=False, position=2).order_by("orders", "id")[
+               :constants.FOOTER_NAV_LENGTH]
+    serializer_class = NavModelSerializer

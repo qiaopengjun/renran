@@ -7,7 +7,7 @@
 
         <!-- 右上角 -->
         <!-- 未登录显示登录/注册/写文章 -->
-        <router-link class="btn write-btn" target="_blank" to="/writer"><img class="icon-write" src="/static/image/write.svg">写文章</router-link>
+        <a class="btn write-btn" target="_blank" href="/writer"><img class="icon-write" src="/static/image/write.svg">写文章</a>
         <router-link class="btn sign-up" id="sign_up" to="/user/register">注册</router-link>
         <router-link class="btn log-in" id="sign_in" to="/user/login">登录</router-link>
         <div class="container">
@@ -15,8 +15,29 @@
             <ul class="nav navbar-nav">
               <li class="tab active">
                 <a href="/">
-                  <img class="menu-icon" src="/static/image/menu.svg">
+                  <i class="iconfont ic-navigation-discover menu-icon"></i>
                   <span class="menu-text">首页</span>
+                </a>
+              </li>
+              <li class="tab">
+                <a href="/">
+                  <i class="iconfont ic-navigation-follow menu-icon"></i>
+                  <span class="menu-text">关注</span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a href=""><i class="iconfont ic-comments"></i> <span>评论</span></a></li>
+                  <li><a href=""><i class="iconfont ic-chats"></i> <span>简信</span></a></li>
+                  <li><a href=""><i class="iconfont ic-requests"></i> <span>投稿请求</span></a></li>
+                  <li><a href=""><i class="iconfont ic-likes"></i> <span>喜欢和赞</span></a></li>
+                  <li><a href=""><i class="iconfont ic-follows"></i> <span>关注</span></a></li>
+                  <li><a href=""><i class="iconfont ic-money"></i> <span>赞赏和付费</span></a></li>
+                  <li><a href=""><i class="iconfont ic-others"></i> <span>其它提醒</span></a></li>
+                </ul>
+              </li>
+              <li class="tab">
+                <a href="/">
+                  <i class="iconfont ic-navigation-notification menu-icon"></i>
+                  <span class="menu-text">消息</span>
                 </a>
               </li>
               <li class="search">
@@ -167,21 +188,191 @@ nav .icon-write {
 
 nav .menu-text {
   font-size: 17px;
+}
+
+nav .active a {
   color: #ea6f5a;
 }
 
 nav .menu-icon {
   width: 20px;
   height: 20px;
-  vertical-align: sub;
+  vertical-align: baseline;
   margin-right: 3px;
+}
+
+.tab:hover .dropdown-menu {
+  display: block;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 120px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  list-style: none;
+  font-size: 14px;
+  text-align: left;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, .15);
+  border-radius: 4px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+  background-clip: padding-box
+}
+
+.dropdown-menu.pull-right {
+  right: 0;
+  left: auto
+}
+
+.dropdown-menu .divider {
+  height: 1px;
+  margin: 9px 0;
+  overflow: hidden;
+  background-color: #e5e5e5
+}
+
+.dropdown-menu > li > a {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: 400;
+  line-height: 1.42857;
+  color: #333;
+  white-space: nowrap
+}
+
+.dropdown-menu > li > a:focus, .dropdown-menu > li > a:hover {
+  text-decoration: none;
+  color: #262626;
+  background-color: #f5f5f5
+}
+
+.dropdown-menu > .active > a, .dropdown-menu > .active > a:focus, .dropdown-menu > .active > a:hover {
+  color: #fff;
+  text-decoration: none;
+  outline: 0;
+  background-color: #337ab7
+}
+
+.dropdown-menu > .disabled > a, .dropdown-menu > .disabled > a:focus, .dropdown-menu > .disabled > a:hover {
+  color: #777
+}
+
+.dropdown-menu > .disabled > a:focus, .dropdown-menu > .disabled > a:hover {
+  text-decoration: none;
+  background-color: transparent;
+  background-image: none;
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+  cursor: not-allowed
+}
+
+.open > .dropdown-menu {
+  display: block
+}
+
+.open > a {
+  outline: 0
+}
+
+.dropdown-menu-right {
+  left: auto;
+  right: 0
+}
+
+.dropdown-menu-left {
+  left: 0;
+  right: auto
+}
+
+.dropdown-header {
+  display: block;
+  padding: 3px 20px;
+  font-size: 12px;
+  line-height: 1.42857;
+  color: #777;
+  white-space: nowrap
+}
+
+.dropdown-backdrop {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  z-index: 990
+}
+
+.pull-right > .dropdown-menu {
+  right: 0;
+  left: auto
+}
+
+.dropup .caret, .navbar-fixed-bottom .dropdown .caret {
+  border-top: 0;
+  border-bottom: 4px dashed;
+  border-bottom: 4px solid \9;
+  content: ""
+}
+
+.dropup .dropdown-menu, .navbar-fixed-bottom .dropdown .dropdown-menu {
+  top: auto;
+  bottom: 100%;
+  margin-bottom: 2px
+}
+
+.navbar-right .dropdown-menu-left {
+  left: 0;
+  right: auto
+}
+
+.dropdown-menu {
+  width: 150px;
+  margin-top: -1px;
+  border-radius: 0 0 4px 4px
+}
+
+.dropdown-menu li {
+  margin: 0
+}
+
+.dropdown-menu a {
+  height: auto;
+  padding: 10px 20px;
+  line-height: 30px
+}
+
+.dropdown-menu a:hover {
+  background-color: #f5f5f5
+}
+
+.dropdown-menu i {
+  margin-right: 15px;
+  font-size: 22px;
+  color: #ea6f5a;
+  vertical-align: middle
+}
+
+.dropdown-menu span {
+  vertical-align: middle
+}
+
+.dropdown-menu .badge {
+  position: absolute;
+  right: 15px;
+  margin-top: 7px
 }
 
 nav .nav .tab a {
   height: 56px;
   line-height: 26px;
   padding: 15px;
-  color: #ea6f5a;
   background: none;
 }
 

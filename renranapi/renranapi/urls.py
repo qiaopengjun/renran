@@ -35,9 +35,12 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
     path('docs/', include_docs_urls(title="My api title")),
+    # drf-yasg是基于Swagger和OpenAPI 2.0规范的API文档自动化生成工具，能够生成比原生swagger更为友好的API文档界面。
     path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger"),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
+
     path('users/', include("users.urls")),  # include 的值必须是 模块名.urls 格式,字符串中间只能出现一个圆点
     path('oauth/', include("oauth.urls")),
     path('', include("home.urls")),

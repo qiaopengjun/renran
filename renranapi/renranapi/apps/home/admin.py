@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Banner
+from .models import Banner, Nav
 
 # Register your models here.
 # 设置网页title
@@ -8,15 +8,13 @@ admin.site.site_title = "荏苒资讯"
 admin.site.site_header = "荏苒资讯"
 
 
-# admin.site.register(views.BaseAdminView, BaseSetting)
+class NavModelAdmin(admin.ModelAdmin):
+    """导航菜单的模型管理器"""
+    list_display = ["id", "name", "link", "is_http", "position"]
+    ordering = ["id"]
 
-# class GlobalSettings(object):
-#     """xadmin的全局配置"""
-#     site_title = "荏苒资讯"  # 设置站点标题
-#     site_footer = "路飞学城有限公司"  # 设置站点的页脚
-#     menu_style = "accordion"  # 设置菜单折叠
-#
-# admin.site.register(views.CommAdminView, GlobalSettings)
+
+admin.site.register(Nav, NavModelAdmin)
 
 
 class BannerModelAdmin(admin.ModelAdmin):

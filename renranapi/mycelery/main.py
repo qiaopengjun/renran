@@ -24,3 +24,4 @@ app.autodiscover_tasks(["mycelery.sms", "mycelery.email"])
 # 启动Celery的命令
 # 切换目录到mycelery上一级目录下启动
 # celery -A mycelery.main worker --loglevel=info
+# celery -A mycelery.main worker --loglevel=info
