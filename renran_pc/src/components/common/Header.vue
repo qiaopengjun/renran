@@ -19,27 +19,46 @@
                   <span class="menu-text">首页</span>
                 </a>
               </li>
-              <li class="tab">
-                <a href="/">
-                  <i class="iconfont ic-navigation-follow menu-icon"></i>
-                  <span class="menu-text">关注</span>
+              <li class="tab" v-for="top_nav in nav_list">
+                <a :href="top_nav.link" v-if="top_nav.is_http">
+                  <i class="iconfont menu-icon" :class="top_nav.icon"></i>
+                  <span class="menu-text">{{ top_nav.name }}</span>
                 </a>
-                <ul class="dropdown-menu">
-                  <li><a href=""><i class="iconfont ic-comments"></i> <span>评论</span></a></li>
-                  <li><a href=""><i class="iconfont ic-chats"></i> <span>简信</span></a></li>
-                  <li><a href=""><i class="iconfont ic-requests"></i> <span>投稿请求</span></a></li>
-                  <li><a href=""><i class="iconfont ic-likes"></i> <span>喜欢和赞</span></a></li>
-                  <li><a href=""><i class="iconfont ic-follows"></i> <span>关注</span></a></li>
-                  <li><a href=""><i class="iconfont ic-money"></i> <span>赞赏和付费</span></a></li>
-                  <li><a href=""><i class="iconfont ic-others"></i> <span>其它提醒</span></a></li>
+                <router-link :to="top_nav.link" v-else>
+                  <i class="iconfont menu-icon" :class="top_nav.icon"></i>
+                  <span class="menu-text">{{ top_nav.name }}</span>
+                </router-link>
+                <ul class="dropdown-menu" v-if="top_nav.son_list.length>0">
+                  <li v-for="son_nav in top_nav.son_list">
+                    <a :href="son_nav.link" v-if="son_nav.is_http"><i class="iconfont" :class="son_nav.icon"></i> <span>{{
+                        son_nav.name
+                      }}</span></a>
+                    <router-link :to="son_nav.link" v-else><i class="iconfont" :class="son_nav.icon"></i>
+                      <span>{{ son_nav.name }}</span></router-link>
+                  </li>
                 </ul>
               </li>
-              <li class="tab">
-                <a href="/">
-                  <i class="iconfont ic-navigation-notification menu-icon"></i>
-                  <span class="menu-text">消息</span>
-                </a>
-              </li>
+              <!--              <li class="tab">-->
+              <!--                <a href="/">-->
+              <!--                  <i class="iconfont ic-navigation-follow menu-icon"></i>-->
+              <!--                  <span class="menu-text">关注</span>-->
+              <!--                </a>-->
+              <!--                <ul class="dropdown-menu">-->
+              <!--                  <li><a href=""><i class="iconfont ic-comments"></i> <span>评论</span></a></li>-->
+              <!--                  <li><a href=""><i class="iconfont ic-chats"></i> <span>简信</span></a></li>-->
+              <!--                  <li><a href=""><i class="iconfont ic-requests"></i> <span>投稿请求</span></a></li>-->
+              <!--                  <li><a href=""><i class="iconfont ic-likes"></i> <span>喜欢和赞</span></a></li>-->
+              <!--                  <li><a href=""><i class="iconfont ic-follows"></i> <span>关注</span></a></li>-->
+              <!--                  <li><a href=""><i class="iconfont ic-money"></i> <span>赞赏和付费</span></a></li>-->
+              <!--                  <li><a href=""><i class="iconfont ic-others"></i> <span>其它提醒</span></a></li>-->
+              <!--                </ul>-->
+              <!--              </li>-->
+              <!--              <li class="tab">-->
+              <!--                <a href="/">-->
+              <!--                  <i class="iconfont ic-navigation-notification menu-icon"></i>-->
+              <!--                  <span class="menu-text">消息</span>-->
+              <!--                </a>-->
+              <!--              </li>-->
               <li class="search">
                 <form target="_blank" action="/search" accept-charset="UTF-8" method="get">
                   <input type="text" name="q" id="q" value="" autocomplete="off" placeholder="搜索" class="search-input">
@@ -58,7 +77,32 @@
 
 <script>
 export default {
-  name: "Header"
+  name: "Header",
+  data() {
+    return {
+      nav_list: [
+        // 提前声明一些默认值,可以在模板渲染的时候防止错误提示
+        {
+          link: "",
+          is_http: "",
+          son_list: [],
+        }
+      ],
+    }
+  },
+  created() {
+    this.get_nav();
+  },
+  methods: {
+    get_nav() {
+      // 获取导航信息
+      this.$axios.get(`${this.$settings.Host}/nav/header/`).then(response => {
+        this.nav_list = response.data;
+      }).catch(error => {
+        this.$message.error("网络异常,无法获取导航信息!");
+      });
+    }
+  }
 }
 </script>
 

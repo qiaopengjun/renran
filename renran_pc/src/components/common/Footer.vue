@@ -2,15 +2,20 @@
   <footer class="container">
     <div class="row">
       <div class="main">
-        <a target="_blank" href="">关于荏苒</a>
-        <em> · </em>
-        <a target="_blank" href="">联系我们</a>
-        <em> · </em>
-        <a target="_blank" href="">加入我们</a>
-        <em> · </em>
-        <a target="_blank" href="">帮助中心</a>
-        <em> · </em>
-        <a target="_blank" href="http://www.jianshu.com/p/cabc8fa39830">合作伙伴</a>
+        <span v-for="(nav, key) in nav_list">
+        <a target="_blank" :href="nav.link" v-if="nav.is_http">{{ nav.name }}</a>
+        <router-link :to="nav.link" v-else>{{ nav.name }}</router-link>
+        <em v-if="key<(nav_list.length-1)"> · </em>
+      </span>
+        <!--        <a target="_blank" href="">关于荏苒</a>-->
+        <!--        <em> · </em>-->
+        <!--        <a target="_blank" href="">联系我们</a>-->
+        <!--        <em> · </em>-->
+        <!--        <a target="_blank" href="">加入我们</a>-->
+        <!--        <em> · </em>-->
+        <!--        <a target="_blank" href="">帮助中心</a>-->
+        <!--        <em> · </em>-->
+        <!--        <a target="_blank" href="http://www.jianshu.com/p/cabc8fa39830">合作伙伴</a>-->
         <div class="icp">©2016-2019 广州荏苒信息科技有限公司 / 荏苒 / 粤ICP备16018329号-5 /</div>
       </div>
     </div>
@@ -19,7 +24,32 @@
 
 <script>
 export default {
-  name: "Footer"
+  name: "Footer",
+  data() {
+    return {
+      nav_list: [
+        // 提前声明一些默认值,可以在模板渲染的时候防止错误提示
+        {
+          link: "",
+          is_http: "",
+          son_list: [],
+        }
+      ],
+    }
+  },
+  created() {
+    this.get_nav();
+  },
+  methods: {
+    get_nav() {
+      // 获取导航信息
+      this.$axios.get(`${this.$settings.Host}/nav/footer/`).then(response => {
+        this.nav_list = response.data;
+      }).catch(error => {
+        this.$message.error("网络异常,无法获取导航信息!");
+      });
+    }
+  }
 }
 </script>
 
