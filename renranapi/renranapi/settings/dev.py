@@ -315,4 +315,9 @@ QQ_CONNECT = {
     "state": "/",  # 用于保存登录成功后的跳转页面路径,查询字符串的参数信息,
 }
 
+# django文件存储
+DEFAULT_FILE_STORAGE = 'renranapi.utils.fastdfs.fdfs_storage.FastDFSStorage'
 
+# FastDFS
+FDFS_URL = 'http://192.168.182.131:8888/'  # 访问图片的路径域名 ip地址修改为自己机器的ip地址
+FDFS_CLIENT_CONF = os.path.join(BASE_DIR, 'utils/fastdfs/client.conf')

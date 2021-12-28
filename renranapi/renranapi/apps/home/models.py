@@ -1,5 +1,6 @@
 from django.db import models
 from renranapi.utils.models import BaseModel
+from django.utils.safestring import mark_safe
 
 
 # Create your models here.
@@ -21,6 +22,16 @@ class Banner(BaseModel):
 
     def __str__(self):
         return self.name
+
+    def image_html(self):
+        if self.image:
+            return mark_safe(
+                f'<img style="border-radius: 0%;max-height: 60px; max-width: 200px;" src="{self.image.url}">')
+        return ""
+
+    image_html.short_description = "广告图片"
+    image_html.allow_tags = True
+    image_html.admin_order_field = "image"
 
 
 class Nav(BaseModel):
