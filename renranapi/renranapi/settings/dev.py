@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'users',
     'oauth',
     'home',
+    'article',
 ]
 
 # CORS组的配置信息
