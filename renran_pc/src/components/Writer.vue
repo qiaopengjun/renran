@@ -15,12 +15,15 @@
         </div>
       </div>
       <ul class="_3MbJ4 _3t059">
-         <li class="_3DM7w" :class="key===current_collection?'_31PCv':''" @click="current_collection=key" :title="collection.name" v-for="(collection, key) in collection_list">
-<!--        <li class="_3DM7w _31PCv" title="日记本">-->
-          <div class="_3P4JX _2VLy-"  v-if="key===current_collection">
+        <li class="_3DM7w" :class="key===current_collection?'_31PCv':''" @click="current_collection=key"
+            :title="collection.name" v-for="(collection, key) in collection_list">
+          <!--        <li class="_3DM7w _31PCv" title="日记本">-->
+          <div class="_3P4JX _2VLy-" v-if="key===current_collection"
+               @click.stop="is_show_collection_menu=!is_show_collection_menu">
             <i class="fa fa-gear"></i>
             <span>
-              <ul class="_2V8zt _3FcHm _2w9pn" :class="true?'':'NvfK4'">
+              <ul class="_2V8zt _3FcHm _2w9pn" :class="is_show_collection_menu?'NvfK4':''">
+<!--              <ul class="_2V8zt _3FcHm _2w9pn" :class="true?'':'NvfK4'">-->
                 <li class="_2po2r cRfUr" title="">
                   <span class=""><i class="fa fa-pencil-square-o _22XWG"></i>修改文集</span>
                 </li>
@@ -30,10 +33,10 @@
               </ul>
             </span>
           </div>
-           <span>{{collection.name}}</span>
-<!--          <span>日记本</span>-->
+          <span>{{ collection.name }}</span>
+          <!--          <span>日记本</span>-->
         </li>
-<!--        <li class="_3DM7w" title="随笔"><span>随笔</span></li>-->
+        <!--        <li class="_3DM7w" title="随笔"><span>随笔</span></li>-->
       </ul>
       <div style="height: 50px;"></div>
       <div role="button" class="h-5Am">
@@ -126,16 +129,26 @@ export default {
       is_show_page: false, // 控制是否显示页面
       collection_list: [],    // 当前登录用户的文集列表
       current_collection: 0, // 当前用户选中操作的文集下标,默认为第一个文集,也就是下标为0的文集
+      is_show_collection_menu: false, // 控制文集菜单是否显示
     }
   },
   watch: {
     editorContent() {
       console.log(this.editorContent)
+    },
+    current_collection() {
+      // 切换操作的文集
+      this.is_show_collection_menu = false;
     }
   },
   mounted() {
     if (this.is_show_page) {
       document.querySelector("#editor").style.height = document.documentElement.clientHeight - document.querySelector("._24i7u").clientHeight + "px";
+      // 点选页面其他位置，关闭菜单
+      document.onclick = (event) => {
+        // 关闭文集菜单
+        this.is_show_collection_menu = false;
+      }
     }
   },
   created() {
