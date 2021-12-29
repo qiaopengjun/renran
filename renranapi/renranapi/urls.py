@@ -45,4 +45,5 @@ urlpatterns = [
     path('oauth/', include("oauth.urls")),
     path('', include("home.urls")),
     re_path(r'media/(?P<path>.*)', serve, {"document_root": settings.MEDIA_ROOT}),
+    path('article/', include("article.urls")),
 ]

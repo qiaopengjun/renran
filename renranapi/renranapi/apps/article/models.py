@@ -14,6 +14,9 @@ class ArticleCollection(BaseModel):
         verbose_name = "文集"
         verbose_name_plural = verbose_name
 
+    def __str__(self):
+        return self.name
+
 
 class Article(BaseModel):
     title = models.CharField(max_length=150, db_index=True, verbose_name="文章")
@@ -35,6 +38,9 @@ class Article(BaseModel):
         db_table = "rr_article"
         verbose_name = "文章"
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.title
 
 
 class ArticleSpecial(BaseModel):
@@ -102,3 +108,6 @@ class ArticleImage(BaseModel):
         db_table = "rr_article_image"
         verbose_name = "文章图片"
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.group
