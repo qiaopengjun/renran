@@ -25,14 +25,15 @@ class CollectionAPIView(ListAPIView):
             """针对新用户默认创建2个文集提供给用户[当然也可以在用户注册的时候给用户默认添加2个文集]"""
             collection1 = ArticleCollection.objects.create(name="日记本", user=self.request.user)
             collection2 = ArticleCollection.objects.create(name="随笔", user=self.request.user)
-            collection_list = [
-                {
-                    "id": collection1.id,
-                    "name": collection1.name
-                },
-                {
-                    "id": collection2.id,
-                    "name": collection2.name
-                }
-            ]
+            collection_list = [collection1, collection2]
+            # collection_list = [
+            #     {
+            #         "id": collection1.id,
+            #         "name": collection1.name
+            #     },
+            #     {
+            #         "id": collection2.id,
+            #         "name": collection2.name
+            #     }
+            # ]
         return collection_list

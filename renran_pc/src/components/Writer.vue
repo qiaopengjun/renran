@@ -15,8 +15,9 @@
         </div>
       </div>
       <ul class="_3MbJ4 _3t059">
-        <li class="_3DM7w _31PCv" title="日记本">
-          <div class="_3P4JX _2VLy-">
+         <li class="_3DM7w" :class="key===current_collection?'_31PCv':''" @click="current_collection=key" :title="collection.name" v-for="(collection, key) in collection_list">
+<!--        <li class="_3DM7w _31PCv" title="日记本">-->
+          <div class="_3P4JX _2VLy-"  v-if="key===current_collection">
             <i class="fa fa-gear"></i>
             <span>
               <ul class="_2V8zt _3FcHm _2w9pn" :class="true?'':'NvfK4'">
@@ -29,9 +30,10 @@
               </ul>
             </span>
           </div>
-          <span>日记本</span>
+           <span>{{collection.name}}</span>
+<!--          <span>日记本</span>-->
         </li>
-        <li class="_3DM7w" title="随笔"><span>随笔</span></li>
+<!--        <li class="_3DM7w" title="随笔"><span>随笔</span></li>-->
       </ul>
       <div style="height: 50px;"></div>
       <div role="button" class="h-5Am">
@@ -111,6 +113,7 @@
 <script>
 import {mavonEditor} from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
+import '../../static/font-awesome/css/font-awesome.css'
 
 export default {
   name: "Writer",
@@ -121,6 +124,8 @@ export default {
       img_file: [],
       collection_form: false,
       is_show_page: false, // 控制是否显示页面
+      collection_list: [],    // 当前登录用户的文集列表
+      current_collection: 0, // 当前用户选中操作的文集下标,默认为第一个文集,也就是下标为0的文集
     }
   },
   watch: {
@@ -135,11 +140,26 @@ export default {
   },
   created() {
     this.token = this.$settings.check_user_login(this);
+    if (this.token) {
+      this.get_collection();
+    }
   },
   components: {
     mavonEditor
   },
   methods: {
+    get_collection() {
+      // 获取当前用户的文集列表
+      this.$axios.get(`${this.$settings.Host}/article/collection/`, {
+        headers: {  // 设置本次http的请求头信息
+          Authorization: "jwt " + this.token,
+        }
+      }).then(response => {
+        this.collection_list = response.data;
+      }).catch(error => {
+        this.$message.error("网络异常,获取文集列表失败!");
+      });
+    },
     // 绑定@imgAdd event
     imgAdd(pos, $file) {
       // 添加文件
