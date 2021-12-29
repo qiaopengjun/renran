@@ -5,11 +5,12 @@
         <router-link to="/">回首页</router-link>
       </div>
       <div class="_1iZMb">
-        <div class="_33Zlg" @click="collection_form=true"><i class="fa fa-plus"></i><span>新建文集</span></div>
+        <div class="_33Zlg" @click="collection_form=!collection_form"><i class="fa fa-plus"></i><span>新建文集</span></div>
+        <!--        <div class="_33Zlg" @click="collection_form=true"><i class="fa fa-plus"></i><span>新建文集</span></div>-->
         <div class="_2G97m">
           <form class="M8J6Q" :class="collection_form?'_2a1Rp':'_1mU5v'">
-            <input type="text" placeholder="请输入文集名..." name="name" class="_1CtV4">
-            <button type="submit" class="dwU8Q _3zXcJ _3QfkW"><span>提 交</span></button>
+            <input type="text" placeholder="请输入文集名..." v-model="collection_name" class="_1CtV4">
+            <button type="submit" class="dwU8Q _3zXcJ _3QfkW" @click.prevent="add_collection"><span>提 交</span></button>
             <button type="button" class="vIzwB _3zXcJ" @click="collection_form=false"><span>取 消</span></button>
           </form>
         </div>
@@ -127,6 +128,7 @@ export default {
       img_file: [],
       collection_form: false,
       is_show_page: false, // 控制是否显示页面
+      collection_name: "",  // 本次新增的文集名称
       collection_list: [],    // 当前登录用户的文集列表
       current_collection: 0, // 当前用户选中操作的文集下标,默认为第一个文集,也就是下标为0的文集
       is_show_collection_menu: false, // 控制文集菜单是否显示
@@ -172,6 +174,25 @@ export default {
       }).catch(error => {
         this.$message.error("网络异常,获取文集列表失败!");
       });
+    },
+    add_collection() {
+      // 添加文集
+      this.$axios.post(`${this.$settings.Host}/article/collection/`, {
+        name: this.collection_name
+      }, {
+        headers: {
+          Authorization: "jwt " + this.token,
+        }
+      }).then(response => {
+        this.$message.success("新增文集成功！");
+        this.collection_list.push(response.data);
+        // 清空和关闭添加文集的表单
+        this.collection_name = "";
+        this.collection_form = false;
+      }).catch(error => {
+        this.$message.error("对不起，新增文集失败！");
+      });
+
     },
     // 绑定@imgAdd event
     imgAdd(pos, $file) {

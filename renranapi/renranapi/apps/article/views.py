@@ -1,12 +1,12 @@
 from django.shortcuts import render
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from .models import ArticleCollection
 from .serializers import CollectionModelSerializer
 
 
 # Create your views here.
-class CollectionAPIView(ListAPIView):
+class CollectionAPIView(ListAPIView, CreateAPIView):
     """文集接口"""
     # 限制只能是登录用户才能访问操作当前视图的接口
     permission_classes = [IsAuthenticated]
