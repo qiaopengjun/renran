@@ -6,6 +6,7 @@ import Register from "../components/Register"
 import FindPassword from "../components/FindPassword";
 import ResetPassword from "../components/ResetPassword";
 import QQCallBack from "../components/QQCallBack"
+import Writer from "../components/Writer";
 
 Vue.use(Router)
 
@@ -72,5 +73,14 @@ export default new Router({
       name: "QQCallBack",
       component: QQCallBack,
     },
+    {
+      meta: {
+        title: "荏苒项目-写文章页面", //配置title
+        keepAlive: true //是否缓存
+      },
+       name:"Writer",
+       path:"/writer",
+       component: Writer,
+     },
   ]
 })

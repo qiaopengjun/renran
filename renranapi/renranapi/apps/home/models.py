@@ -6,7 +6,7 @@ from django.utils.safestring import mark_safe
 # Create your models here.
 class Banner(BaseModel):
     name = models.CharField(max_length=150, verbose_name='轮播图标题')
-    info = models.CharField(null=True, blank=True, max_length=1000, verbose_name='备注信息')
+    info = models.TextField(null=True, blank=True, verbose_name='备注信息')
     link = models.CharField(null=True, blank=True, max_length=150, verbose_name='轮播图广告地址')
     # upload_to 存储子目录，真实存放地址会使用配置中的MEDIA_ROOT+upload_to
     image = models.ImageField(upload_to='banner', verbose_name='轮播图', null=True, blank=True)

@@ -4,9 +4,15 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 
+import mavonEditor from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
+// 注册mavon-editor组件
+Vue.use(mavonEditor);
+
 Vue.config.productionTip = false
 // 加载项目的全局变量和全局方法
 import settings from "./settings"
+
 Vue.prototype.$settings = settings;
 
 // elementUI 导入
@@ -33,17 +39,17 @@ Vue.prototype.$axios = axios; // 把对象挂载vue中
 // 导入防水墙验证码的核心js文件
 import "../static/js/TCaptcha"
 
-router.beforeEach((to,from,next)=>{
-    if(to.meta.title){
-        document.title=to.meta.title
-    }
-    next()
+router.beforeEach((to, from, next) => {
+  if (to.meta.title) {
+    document.title = to.meta.title
+  }
+  next()
 })
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
-  components: { App },
+  components: {App},
   template: '<App/>'
 })
