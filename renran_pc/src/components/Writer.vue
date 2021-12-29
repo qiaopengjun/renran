@@ -1,7 +1,9 @@
 <template>
-  <div class="write">
+  <div class="write" v-if="is_show_page">
     <div class="_2v5v5">
-      <div class="_3zibT"><router-link to="/">回首页</router-link></div>
+      <div class="_3zibT">
+        <router-link to="/">回首页</router-link>
+      </div>
       <div class="_1iZMb">
         <div class="_33Zlg" @click="collection_form=true"><i class="fa fa-plus"></i><span>新建文集</span></div>
         <div class="_2G97m">
@@ -114,9 +116,11 @@ export default {
   name: "Writer",
   data() {
     return {
+      token: "",
       editorContent: "",
       img_file: [],
       collection_form: false,
+      is_show_page: false, // 控制是否显示页面
     }
   },
   watch: {
@@ -125,7 +129,12 @@ export default {
     }
   },
   mounted() {
-    document.querySelector("#editor").style.height = document.documentElement.clientHeight - document.querySelector("._24i7u").clientHeight + "px";
+    if (this.is_show_page) {
+      document.querySelector("#editor").style.height = document.documentElement.clientHeight - document.querySelector("._24i7u").clientHeight + "px";
+    }
+  },
+  created() {
+    this.token = this.$settings.check_user_login(this);
   },
   components: {
     mavonEditor
