@@ -53,13 +53,14 @@
           <div>
             <div class="_1GsW5"><i class="fa fa-plus-circle"></i><span> 新建文章</span></div>
             <ul class="_2TxA-">
-               <li class="_25Ilv" :class="key===current_article?'_33nt7':''" @click="current_article=key" :title="article.title" v-for="(article,key) in article_list">
+              <li class="_25Ilv" :class="key===current_article?'_33nt7':''" @click="current_article=key"
+                  :title="article.title" v-for="(article,key) in article_list">
                 <!-- 文章的发布状态 -->
-                  <i class="_13kgp" :class="article.is_public?'_2m93u':''"></i>
+                <i class="_13kgp" :class="article.is_public?'_2m93u':''"></i>
                 <div class="_3P4JX poOXI" v-if="key===current_article">
-<!--              <li class="_25Ilv _33nt7" title="ABC">-->
-<!--                <i class="_13kgp _2m93u"></i>-->
-<!--                <div class="_3P4JX poOXI">-->
+                  <!--              <li class="_25Ilv _33nt7" title="ABC">-->
+                  <!--                <i class="_13kgp _2m93u"></i>-->
+                  <!--                <div class="_3P4JX poOXI">-->
                   <i class="fa fa-gear"></i>
                   <span>
                     <ul class="_2V8zt _3FcHm _2w9pn">
@@ -88,22 +89,22 @@
                     </ul>
                   </span>
                 </div>
-                 <span class="NariC">{{article.title}}</span>
-                <span class="hLzJv">{{article.content.substr(0,20)}}</span>
-                <span class="_29C-V" v-if="key===current_article">字数:{{article.content.length}}</span>
-<!--                <span class="NariC">ABC</span>-->
-<!--                <span class="hLzJv">题目：有四个数字：1、2、3、4，能组成多少个互不相同且无重复数字的三位数？各是多少？-->
+                <span class="NariC">{{ article.title }}</span>
+                <span class="hLzJv">{{ article.content.substr(0, 20) }}</span>
+                <span class="_29C-V" v-if="key===current_article">字数:{{ article.content.length }}</span>
+                <!--                <span class="NariC">ABC</span>-->
+                <!--                <span class="hLzJv">题目：有四个数字：1、2、3、4，能组成多少个互不相同且无重复数字的三位数？各是多少？-->
 
-<!--题目：企业发放的奖金根据利润提成</span>-->
-<!--                <span class="_29C-V">字数:905</span>-->
+                <!--题目：企业发放的奖金根据利润提成</span>-->
+                <!--                <span class="_29C-V">字数:905</span>-->
               </li>
-<!--              <li class="_25Ilv" title="2020-01-12">-->
-<!--                <i class="_13kgp"></i>-->
-<!--                <span class="NariC">2020-01-12</span>-->
-<!--                <span class="hLzJv">题目：有四个数字：1、2、3、4，能组成多少个互不相同且无重复数字的三位数？各是多少？-->
+              <!--              <li class="_25Ilv" title="2020-01-12">-->
+              <!--                <i class="_13kgp"></i>-->
+              <!--                <span class="NariC">2020-01-12</span>-->
+              <!--                <span class="hLzJv">题目：有四个数字：1、2、3、4，能组成多少个互不相同且无重复数字的三位数？各是多少？-->
 
-<!--题目：企业发放的奖金根据利润提成</span>-->
-<!--              </li>-->
+              <!--题目：企业发放的奖金根据利润提成</span>-->
+              <!--              </li>-->
             </ul>
             <div class="_2cVn3"><i class="fa fa-plus"></i><span> 在下方新建文章</span></div>
           </div>
@@ -152,6 +153,8 @@ export default {
     current_collection() {
       // 切换操作的文集
       this.is_show_collection_menu = false;
+      // 重新获取当前文集的文章列表
+      this.get_article();
     }
   },
   mounted() {
@@ -231,6 +234,8 @@ export default {
           // 客户端从文集列表移除当前文集，并重置当前操作的文集ID为0
           this.collection_list.splice(this.current_collection, 1);
           this.current_collection = 0;
+          // 重新获取文章列表
+          this.get_article();
         }).catch(error => {
           this.$message.error("删除文集失败！");
         })
