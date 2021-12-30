@@ -37,3 +37,8 @@ class CollectionAPIView(ListAPIView, CreateAPIView, DestroyAPIView):
             #     }
             # ]
         return collection_list
+
+    def perform_destroy(self, instance):
+        # 逻辑删除文集
+        instance.is_deleted = True
+        instance.save()

@@ -15,7 +15,7 @@ class CollectionModelSerializer(serializers.ModelSerializer):
         # 获取当前登录用户信息，可以直接通过self.context["request"]
         user = self.context["request"].user
         try:
-            ArticleCollection.objects.get(user=user, name=name)
+            ArticleCollection.objects.get(user=user, name=name, is_deleted=False)
             raise serializers.ValidationError("对不起，当前文集已存在！")
         except ArticleCollection.DoesNotExist:
             return attrs

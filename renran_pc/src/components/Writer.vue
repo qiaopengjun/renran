@@ -203,23 +203,35 @@ export default {
       }
       // 获取本次操作的文集，提取文集的id
       let collection_id = this.collection_list[this.current_collection].id;
-      this.$axios.delete(`${this.$settings.Host}/article/collection/${collection_id}/`, {
-        headers: {
-          Authorization: "jwt " + this.token,
-        }
-      }).then(response => {
-        this.$message.success("成功删除当前文集！");
-        // 客户端从文集列表移除当前文集，并重置当前操作的文集ID为0
-        this.collection_list.splice(this.current_collection, 1);
-        this.current_collection = 0;
-      }).catch(error => {
-        this.$message.error("删除文集失败！");
-      })
+      let collection_name = this.collection_list[this.current_collection].name;
+      this.$confirm(`确认要删除当前文集《${collection_name}》吗？`, '危险操作', {
+        confirmButtonText: '删除',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 确认删除
+        this.$axios.delete(`${this.$settings.Host}/article/collection/${collection_id}/`, {
+          headers: {
+            Authorization: "jwt " + this.token,
+          }
+        }).then(response => {
+          this.$message.success("成功删除当前文集！");
+          // 客户端从文集列表移除当前文集，并重置当前操作的文集ID为0
+          this.collection_list.splice(this.current_collection, 1);
+          this.current_collection = 0;
+        }).catch(error => {
+          this.$message.error("删除文集失败！");
+        })
+      }).catch(() => {
+        // 取消
+
+      });
     },
     // 绑定@imgAdd event
     imgAdd(pos, $file) {
       // 添加文件
-    },
+    }
+    ,
     imgDel(pos) {
       // 删除文件
     }
