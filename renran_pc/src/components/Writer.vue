@@ -57,13 +57,14 @@
                   :title="article.title" v-for="(article,key) in article_list">
                 <!-- 文章的发布状态 -->
                 <i class="_13kgp" :class="article.is_public?'_2m93u':''"></i>
-                <div class="_3P4JX poOXI" v-if="key===current_article">
+                <div class="_3P4JX poOXI" v-if="key===current_article" @click.stop.prevent="is_show_article_menu=!is_show_article_menu">
                   <!--              <li class="_25Ilv _33nt7" title="ABC">-->
                   <!--                <i class="_13kgp _2m93u"></i>-->
                   <!--                <div class="_3P4JX poOXI">-->
                   <i class="fa fa-gear"></i>
                   <span>
-                    <ul class="_2V8zt _3FcHm _2w9pn">
+                    <ul class="_2V8zt _3FcHm _2w9pn" :class="is_show_article_menu?'NvfK4':''">
+<!--                    <ul class="_2V8zt _3FcHm _2w9pn">-->
                       <li class="_2po2r cRfUr" title=""><span class=""><i
                         class="fa fa-share _22XWG"></i>直接发布</span></li>
                       <li class="_2po2r cRfUr" title=""><span class=""><i
@@ -144,6 +145,7 @@ export default {
       is_show_collection_menu: false, // 控制文集菜单是否显示
       article_list: [],     // 当前文集的文章列表
       current_article: 0,   // 当前用户选中操作的文章下标,默认为第一个文章,也就是下标为0的文章
+      is_show_article_menu: false, // 控制文章菜单是否显示
     }
   },
   watch: {
@@ -155,6 +157,10 @@ export default {
       this.is_show_collection_menu = false;
       // 重新获取当前文集的文章列表
       this.get_article();
+    },
+    current_article() {
+      // 切换操作的文章
+      this.is_show_article_menu = false;
     }
   },
   mounted() {
@@ -164,6 +170,8 @@ export default {
       document.onclick = (event) => {
         // 关闭文集菜单
         this.is_show_collection_menu = false;
+        // 关闭文章菜单
+        this.is_show_article_menu = false;
       }
     }
   },
@@ -854,4 +862,6 @@ body * {
   top: 44px;
   height: 580px;
 }
+
+
 </style>
