@@ -20,12 +20,11 @@ class ArticleCollection(BaseModel):
 
 class Article(BaseModel):
     title = models.CharField(max_length=150, db_index=True, verbose_name="文章")
-    content = models.TextField(verbose_name="文章内容")
-    html_content = models.TextField(verbose_name="文章内容[html格式]")
-    user = models.ForeignKey(User, related_name="myarticles", on_delete=models.DO_NOTHING, verbose_name="作者")
-    collection = models.ForeignKey(ArticleCollection, related_name="article_list", on_delete=models.CASCADE,
-                                   verbose_name="文集")
-    pub_date = models.DateTimeField(null=True, blank=True, default=None, verbose_name="发布时间")
+    content = models.TextField(null=True, blank=True, verbose_name="文章内容")
+    html_content = models.TextField(null=True, blank=True, verbose_name="文章内容[html格式]")
+    user = models.ForeignKey(User,related_name="myarticles", on_delete=models.DO_NOTHING, verbose_name="作者")
+    collection = models.ForeignKey(ArticleCollection, related_name="article_list", on_delete=models.CASCADE, verbose_name="文集")
+    pub_date = models.DateTimeField(null=True,blank=True, default=None, verbose_name="发布时间")
     access_pwd = models.CharField(max_length=15, null=True, blank=True, verbose_name="访问密码")
     read_count = models.IntegerField(default=0, null=True, blank=True, verbose_name="阅读量")
     like_count = models.IntegerField(default=0, null=True, blank=True, verbose_name="点赞量")

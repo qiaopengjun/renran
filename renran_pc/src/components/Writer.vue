@@ -51,13 +51,14 @@
       <div class="_3revO _2mnPN">
         <div class="_3br9T">
           <div>
-            <div class="_1GsW5"><i class="fa fa-plus-circle"></i><span> 新建文章</span></div>
+            <div class="_1GsW5" @click="add_article(true)"><i class="fa fa-plus-circle"></i><span> 新建文章</span></div>
             <ul class="_2TxA-">
               <li class="_25Ilv" :class="key===current_article?'_33nt7':''" @click="current_article=key"
                   :title="article.title" v-for="(article,key) in article_list">
                 <!-- 文章的发布状态 -->
                 <i class="_13kgp" :class="article.is_public?'_2m93u':''"></i>
-                <div class="_3P4JX poOXI" v-if="key===current_article" @click.stop.prevent="is_show_article_menu=!is_show_article_menu">
+                <div class="_3P4JX poOXI" v-if="key===current_article"
+                     @click.stop.prevent="is_show_article_menu=!is_show_article_menu">
                   <!--              <li class="_25Ilv _33nt7" title="ABC">-->
                   <!--                <i class="_13kgp _2m93u"></i>-->
                   <!--                <div class="_3P4JX poOXI">-->
@@ -91,8 +92,12 @@
                   </span>
                 </div>
                 <span class="NariC">{{ article.title }}</span>
-                <span class="hLzJv">{{ article.content.substr(0, 20) }}</span>
-                <span class="_29C-V" v-if="key===current_article">字数:{{ article.content.length }}</span>
+                <span class="hLzJv" v-if="article.content">{{ article.content.substr(0, 20) }}</span>
+                <span class="hLzJv" v-else></span>
+                <span class="_29C-V" v-if="key===current_article">字数:
+                  <span v-if="article.content">{{ article.content.length }}</span>
+                   <span v-else>0</span>
+                  </span>
                 <!--                <span class="NariC">ABC</span>-->
                 <!--                <span class="hLzJv">题目：有四个数字：1、2、3、4，能组成多少个互不相同且无重复数字的三位数？各是多少？-->
 
@@ -107,7 +112,7 @@
               <!--题目：企业发放的奖金根据利润提成</span>-->
               <!--              </li>-->
             </ul>
-            <div class="_2cVn3"><i class="fa fa-plus"></i><span> 在下方新建文章</span></div>
+            <div class="_2cVn3" @click="add_article(false)"><i class="fa fa-plus"></i><span> 在下方新建文章</span></div>
           </div>
         </div>
       </div>
@@ -297,6 +302,28 @@ export default {
       }).catch(error => {
         this.$message.error("获取文章列表失败!");
       });
+    },
+    add_article(insert) {
+      let collection_id = this.collection_list[this.current_collection].id;
+      this.$axios.post(`${this.$settings.Host}/article/collection/${collection_id}/articles/`, {
+        insert, // insert:insert的简写
+        title: new Date().toLocaleDateString().split("/").join("-"),
+      }, {
+        headers: {
+          Authorization: "jwt " + this.token,
+        }
+      }).then(response => {
+        // 根据insert的值判断是插入文章还是追加文章
+        if (insert) {
+          this.article_list.unshift(response.data);
+          this.current_article = 0;
+        } else {
+          this.article_list.push(response.data);
+          this.current_article = this.article_list.length - 1;
+        }
+      }).catch(error => {
+        this.$message.error("添加文章失败!请联系客服工作人员!");
+      })
     },
     // 绑定@imgAdd event
     imgAdd(pos, $file) {

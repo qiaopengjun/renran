@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import ArticleCollection, Article
+from django.utils import timezone as datetime
 
 
 class CollectionModelSerializer(serializers.ModelSerializer):
@@ -40,7 +41,31 @@ class CollectionModelSerializer(serializers.ModelSerializer):
 
 class ArticleModelSerializer(serializers.ModelSerializer):
     """文章序列化器"""
+    insert = serializers.BooleanField(write_only=True, required=False, default=True,
+                                      help_text="新增文章的排序位置: True表示开头,False表示末尾")
 
     class Meta:
         model = Article
-        fields = ["id", "title", "content", "html_content", "is_public", "pub_date"]
+        fields = ["id", "title", "content", "html_content", "is_public", "pub_date", "insert"]
+
+    def create(self, validated_data):
+        """添加文章"""
+        # 如果希望在序列化器中获取视图中的路由参数,必须先获取视图对象
+        # self.context["view"] # 调用当前序列化器的视图对象
+        # self.context["request"] # 本次客户端发送的http请求
+        # self.context["format"]  # 本次客户端期望服务端发送的数据格式
+        collection_id = int(self.context["view"].kwargs.get("collection"))
+
+        instance = Article.objects.create(
+            title=datetime.now().strftime("%Y-%m-%d"),
+            user=self.context["request"].user,
+            collection_id=collection_id,
+        )
+
+        # 处理文章的顺序
+        if not validated_data.get("insert"):
+            """把文章调整到末尾"""
+            instance.orders = 0 - instance.id
+            instance.save()
+
+        return instance

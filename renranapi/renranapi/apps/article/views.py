@@ -44,7 +44,7 @@ class CollectionAPIView(ListAPIView, CreateAPIView, DestroyAPIView, UpdateAPIVie
         instance.save()
 
 
-class ArticleAPIView(ListAPIView):
+class ArticleAPIView(ListAPIView, CreateAPIView):
     """文章视图接口"""
     # queryset = Article.objects.all()
     serializer_class = ArticleModelSerializer
