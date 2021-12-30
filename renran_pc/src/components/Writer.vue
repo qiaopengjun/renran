@@ -53,9 +53,13 @@
           <div>
             <div class="_1GsW5"><i class="fa fa-plus-circle"></i><span> 新建文章</span></div>
             <ul class="_2TxA-">
-              <li class="_25Ilv _33nt7" title="ABC">
-                <i class="_13kgp _2m93u"></i>
-                <div class="_3P4JX poOXI">
+               <li class="_25Ilv" :class="key===current_article?'_33nt7':''" @click="current_article=key" :title="article.title" v-for="(article,key) in article_list">
+                <!-- 文章的发布状态 -->
+                  <i class="_13kgp" :class="article.is_public?'_2m93u':''"></i>
+                <div class="_3P4JX poOXI" v-if="key===current_article">
+<!--              <li class="_25Ilv _33nt7" title="ABC">-->
+<!--                <i class="_13kgp _2m93u"></i>-->
+<!--                <div class="_3P4JX poOXI">-->
                   <i class="fa fa-gear"></i>
                   <span>
                     <ul class="_2V8zt _3FcHm _2w9pn">
@@ -84,19 +88,22 @@
                     </ul>
                   </span>
                 </div>
-                <span class="NariC">ABC</span>
-                <span class="hLzJv">题目：有四个数字：1、2、3、4，能组成多少个互不相同且无重复数字的三位数？各是多少？
+                 <span class="NariC">{{article.title}}</span>
+                <span class="hLzJv">{{article.content.substr(0,20)}}</span>
+                <span class="_29C-V" v-if="key===current_article">字数:{{article.content.length}}</span>
+<!--                <span class="NariC">ABC</span>-->
+<!--                <span class="hLzJv">题目：有四个数字：1、2、3、4，能组成多少个互不相同且无重复数字的三位数？各是多少？-->
 
-题目：企业发放的奖金根据利润提成</span>
-                <span class="_29C-V">字数:905</span>
+<!--题目：企业发放的奖金根据利润提成</span>-->
+<!--                <span class="_29C-V">字数:905</span>-->
               </li>
-              <li class="_25Ilv" title="2020-01-12">
-                <i class="_13kgp"></i>
-                <span class="NariC">2020-01-12</span>
-                <span class="hLzJv">题目：有四个数字：1、2、3、4，能组成多少个互不相同且无重复数字的三位数？各是多少？
+<!--              <li class="_25Ilv" title="2020-01-12">-->
+<!--                <i class="_13kgp"></i>-->
+<!--                <span class="NariC">2020-01-12</span>-->
+<!--                <span class="hLzJv">题目：有四个数字：1、2、3、4，能组成多少个互不相同且无重复数字的三位数？各是多少？-->
 
-题目：企业发放的奖金根据利润提成</span>
-              </li>
+<!--题目：企业发放的奖金根据利润提成</span>-->
+<!--              </li>-->
             </ul>
             <div class="_2cVn3"><i class="fa fa-plus"></i><span> 在下方新建文章</span></div>
           </div>
@@ -134,6 +141,8 @@ export default {
       collection_list: [],    // 当前登录用户的文集列表
       current_collection: 0, // 当前用户选中操作的文集下标,默认为第一个文集,也就是下标为0的文集
       is_show_collection_menu: false, // 控制文集菜单是否显示
+      article_list: [],     // 当前文集的文章列表
+      current_article: 0,   // 当前用户选中操作的文章下标,默认为第一个文章,也就是下标为0的文章
     }
   },
   watch: {
@@ -173,6 +182,8 @@ export default {
         }
       }).then(response => {
         this.collection_list = response.data;
+        // 成功获取文集列表以后, 再发送ajax请求获取当前文集下的文章列表
+        this.get_article();
       }).catch(error => {
         this.$message.error("网络异常,获取文集列表失败!");
       });
@@ -258,6 +269,20 @@ export default {
 
       }).catch(() => {
 
+      });
+    },
+    get_article() {
+      // 获取当前文集的文章列表
+      // 当前文集ID
+      let collection_id = this.collection_list[this.current_collection].id;
+      this.$axios.get(`${this.$settings.Host}/article/collection/${collection_id}/articles/`, {
+        headers: {
+          Authorization: "jwt " + this.token,
+        }
+      }).then(response => {
+        this.article_list = response.data;
+      }).catch(error => {
+        this.$message.error("获取文章列表失败!");
       });
     },
     // 绑定@imgAdd event

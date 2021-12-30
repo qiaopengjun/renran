@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ArticleCollection
+from .models import ArticleCollection, Article
 
 
 class CollectionModelSerializer(serializers.ModelSerializer):
@@ -36,3 +36,11 @@ class CollectionModelSerializer(serializers.ModelSerializer):
         instance.name = validated_data.get("name")
         instance.save()
         return instance
+
+
+class ArticleModelSerializer(serializers.ModelSerializer):
+    """文章序列化器"""
+
+    class Meta:
+        model = Article
+        fields = ["id", "title", "content", "html_content", "is_public", "pub_date"]

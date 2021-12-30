@@ -25,7 +25,7 @@ class Article(BaseModel):
     user = models.ForeignKey(User, related_name="myarticles", on_delete=models.DO_NOTHING, verbose_name="作者")
     collection = models.ForeignKey(ArticleCollection, related_name="article_list", on_delete=models.CASCADE,
                                    verbose_name="文集")
-    pub_date = models.DateTimeField(null=True, default=None, verbose_name="发布时间")
+    pub_date = models.DateTimeField(null=True, blank=True, default=None, verbose_name="发布时间")
     access_pwd = models.CharField(max_length=15, null=True, blank=True, verbose_name="访问密码")
     read_count = models.IntegerField(default=0, null=True, blank=True, verbose_name="阅读量")
     like_count = models.IntegerField(default=0, null=True, blank=True, verbose_name="点赞量")
@@ -45,6 +45,7 @@ class Article(BaseModel):
 
 class ArticleSpecial(BaseModel):
     """专题模型"""
+    name = models.CharField(max_length=50, unique=True, verbose_name="专题名称")
     image = models.ImageField(null=True, blank=True, verbose_name="封面图片")
     notice = models.TextField(null=True, blank=True, verbose_name="专题公告")
     article_count = models.IntegerField(default=0, null=True, blank=True, verbose_name="文章总数")
@@ -55,6 +56,9 @@ class ArticleSpecial(BaseModel):
         db_table = "rr_article_special"
         verbose_name = "专题"
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name
 
 
 class ArticlePostSpecial(BaseModel):

@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from rest_framework.generics import ListAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
-from .models import ArticleCollection
-from .serializers import CollectionModelSerializer
+from .models import ArticleCollection, Article
+from .serializers import CollectionModelSerializer, ArticleModelSerializer
 
 
 # Create your views here.
@@ -42,3 +42,18 @@ class CollectionAPIView(ListAPIView, CreateAPIView, DestroyAPIView, UpdateAPIVie
         # 逻辑删除文集
         instance.is_deleted = True
         instance.save()
+
+
+class ArticleAPIView(ListAPIView):
+    """文章视图接口"""
+    # queryset = Article.objects.all()
+    serializer_class = ArticleModelSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # /article/collection/<collection>\d/articles/
+        # 获取路由参数的另一种方式 self.kwargs.get("参数名称")
+        collection_id = self.kwargs.get("collection")
+        print(collection_id)
+        return Article.objects.filter(is_deleted=False, is_show=True, user=self.request.user,
+                                      collection_id=collection_id).order_by("orders", "id")
