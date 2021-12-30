@@ -25,7 +25,8 @@
             <span>
               <ul class="_2V8zt _3FcHm _2w9pn" :class="is_show_collection_menu?'NvfK4':''">
 <!--              <ul class="_2V8zt _3FcHm _2w9pn" :class="true?'':'NvfK4'">-->
-                <li class="_2po2r cRfUr" title="">
+                <!--                <li class="_2po2r cRfUr" title="">-->
+                  <li class="_2po2r cRfUr" @click.prevent.stop="put_collection">
                   <span class=""><i class="fa fa-pencil-square-o _22XWG"></i>修改文集</span>
                 </li>
                 <!--                <li class="_2po2r cRfUr" title="">-->
@@ -224,6 +225,38 @@ export default {
         })
       }).catch(() => {
         // 取消
+
+      });
+    },
+    put_collection() {
+      // 修改文集名称
+      let collection_id = this.collection_list[this.current_collection].id;
+      let collection_name = this.collection_list[this.current_collection].name;
+      // 显示修改文集名称的弹窗
+      this.$prompt('请输入新的文集名称', '修改文集', {
+        confirmButtonText: '更新',
+        cancelButtonText: '取消',
+        inputValidator(val) {
+          if (val === collection_name) {
+            return "对不起，文集名称没有进行修改！";
+          }
+        },
+      }).then(({value}) => {
+        // 发送ajax请求服务端修改文集名称
+        this.$axios.put(`${this.$settings.Host}/article/collection/${collection_id}/`, {
+          name: value,
+        }, {
+          headers: {
+            Authorization: "jwt " + this.token,
+          }
+        }).then(response => {
+          this.collection_list[this.current_collection].name = value;
+        }).catch(error => {
+          // 取消不需要做任何事情
+
+        });
+
+      }).catch(() => {
 
       });
     },

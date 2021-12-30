@@ -262,7 +262,7 @@ REST_FRAMEWORK = {
 JWT_AUTH = {
     # jwt token的有效期，默认是7天
     # 'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
-    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=1),
+    # 'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=1),
     # 登录成功以后的自定义相应内容
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',
 }
