@@ -28,7 +28,8 @@
                 <li class="_2po2r cRfUr" title="">
                   <span class=""><i class="fa fa-pencil-square-o _22XWG"></i>修改文集</span>
                 </li>
-                <li class="_2po2r cRfUr" title="">
+                <!--                <li class="_2po2r cRfUr" title="">-->
+                  <li class="_2po2r cRfUr" @click.prevent.stop="del_collection">
                   <span class=""><i class="fa fa-trash-o _22XWG"></i>删除文集</span>
                 </li>
               </ul>
@@ -193,6 +194,27 @@ export default {
         this.$message.error("对不起，新增文集失败！");
       });
 
+    },
+    del_collection() {
+      // 删除文集
+      if (this.collection_list.length < 2) {
+        this.$message.error("对不起，当前文集列表只剩下一个文集了，所以不能删除！");
+        return false;
+      }
+      // 获取本次操作的文集，提取文集的id
+      let collection_id = this.collection_list[this.current_collection].id;
+      this.$axios.delete(`${this.$settings.Host}/article/collection/${collection_id}/`, {
+        headers: {
+          Authorization: "jwt " + this.token,
+        }
+      }).then(response => {
+        this.$message.success("成功删除当前文集！");
+        // 客户端从文集列表移除当前文集，并重置当前操作的文集ID为0
+        this.collection_list.splice(this.current_collection, 1);
+        this.current_collection = 0;
+      }).catch(error => {
+        this.$message.error("删除文集失败！");
+      })
     },
     // 绑定@imgAdd event
     imgAdd(pos, $file) {
