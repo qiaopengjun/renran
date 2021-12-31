@@ -78,7 +78,9 @@
                         class="fa fa-folder-open _22XWG"></i>移动文章
                         <div class="_3x4X_">
                           <ul class="_2KzJx oGKRI _3DXDE _2w9pn">
-                            <li class="_2po2r cRfUr" title="随笔"><span class="">随笔</span></li>
+                            <li class="_2po2r cRfUr" @click="mov_article(collection.id)" :title="collection.name"
+                                v-if="key!==current_collection" v-for="(collection,key) in collection_list">
+                              <span class="">{{ collection.name }}</span></li>
                           </ul>
                         </div>
                       </span>
@@ -340,6 +342,22 @@ export default {
       });
       this.is_show_article_menu = false;
     },
+    mov_article(collection_id) {
+      // 移动文章
+      let article = this.article_list[this.current_article];
+      this.$axios.put(`${this.$settings.Host}/article/${article.id}/`, {
+        collection: collection_id,
+      }, {
+        headers: {
+          Authorization: "jwt " + this.token,
+        }
+      }).then(response => {
+        // 把已经移动到其他文集的文章从当前的文章列表中删除
+        this.article_list.splice(this.current_article, 1);
+      }).catch(error => {
+        this.$message.error("移动文章失败!");
+      });
+    },
     // 绑定@imgAdd event
     imgAdd(pos, $file) {
       // 添加文件
@@ -373,7 +391,7 @@ body * {
   background-color: #404040;
   color: #f2f2f2;
   z-index: 100;
-  width: 16.66666667%;
+  width: 13.66666667%;
   display: block;
   flex: 0 0 auto;
   float: left;
@@ -591,7 +609,7 @@ body * {
 
 .h-5Am {
   display: block;
-  width: 16.66666667%;
+  width: 13.66666667%;
   position: fixed;
   bottom: 0;
   height: 50px;
@@ -905,5 +923,14 @@ body * {
   height: 580px;
 }
 
+._2_WAp ._2KzJx, ._2_WAp ._3x4X_ {
+  position: absolute;
+  right: 100%;
+  top: 0;
+  display: none;
+}
 
+._2_WAp:hover ._2KzJx, ._2_WAp:hover ._3x4X_ {
+  display: block;
+}
 </style>

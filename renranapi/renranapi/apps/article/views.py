@@ -67,3 +67,14 @@ class ArticleAPIView(ListAPIView, CreateAPIView):
         article.is_public = not article.is_public
         article.save()
         return Response({"detail": "发布状态切换成功!"})
+
+    def put(self, request, pk):
+        try:
+            article = Article.objects.get(pk=pk, is_deleted=False, is_show=True, user=self.request.user)
+        except Article.DoesNotExist:
+            return Response({"detail": "当前文章不存在!"})
+
+        collection_id = int(request.data.get("collection"))
+        article.collection_id = collection_id
+        article.save()
+        return Response({"detail": "移动文章成功!"})
