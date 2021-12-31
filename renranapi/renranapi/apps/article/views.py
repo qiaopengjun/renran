@@ -3,7 +3,7 @@ from rest_framework.generics import ListAPIView, CreateAPIView, DestroyAPIView, 
 from rest_framework.permissions import IsAuthenticated
 from .models import ArticleCollection, Article
 from .serializers import CollectionModelSerializer, ArticleModelSerializer
-
+from rest_framework.response import Response
 
 # Create your views here.
 class CollectionAPIView(ListAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView):
@@ -57,3 +57,13 @@ class ArticleAPIView(ListAPIView, CreateAPIView):
         print(collection_id)
         return Article.objects.filter(is_deleted=False, is_show=True, user=self.request.user,
                                       collection_id=collection_id).order_by("orders", "id")
+
+    def patch(self, request, pk):
+        try:
+            article = Article.objects.get(pk=pk, is_deleted=False, is_show=True, user=self.request.user)
+        except Article.DoesNotExist:
+            return Response({"detail": "当前文章不存在!"})
+
+        article.is_public = not article.is_public
+        article.save()
+        return Response({"detail": "发布状态切换成功!"})

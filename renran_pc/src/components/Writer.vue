@@ -66,13 +66,14 @@
                   <span>
                     <ul class="_2V8zt _3FcHm _2w9pn" :class="is_show_article_menu?'NvfK4':''">
 <!--                    <ul class="_2V8zt _3FcHm _2w9pn">-->
-                      <li class="_2po2r cRfUr" title=""><span class=""><i
-                        class="fa fa-share _22XWG"></i>直接发布</span></li>
-                      <li class="_2po2r cRfUr" title=""><span class=""><i
-                        class="fa fa-clock-o _22XWG"></i>定时发布</span></li>
-                      <li class="_2po2r cRfUr" title=""><span class="_20tIi"><i class="iconfont ic-paid _22XWG"></i>发布为付费文章</span></li>
-                      <li class="_2po2r cRfUr" title=""><span class=""><i
-                        class="iconfont ic-set _22XWG"></i>设置发布样式</span></li>
+                      <li class="_2po2r cRfUr" @click.stop.prevent="pub_article" v-if="!article.is_public"><span
+                        class=""><i class="fa fa-share _22XWG"></i>直接发布</span></li>
+                       <li class="_2po2r cRfUr" @click.stop.prevent="pub_article" v-else><span class=""><i
+                         class="fa fa-share _22XWG"></i>设置为隐私文章</span></li>
+                      <li class="_2po2r cRfUr"><span class=""><i class="fa fa-clock-o _22XWG"></i>定时发布</span></li>
+                      <li class="_2po2r cRfUr"><span class="_20tIi"><i
+                        class="iconfont ic-paid _22XWG"></i>发布为付费文章</span></li>
+                      <li class="_2po2r cRfUr"><span class=""><i class="iconfont ic-set _22XWG"></i>设置发布样式</span></li>
                       <li class="_3nZXj _2_WAp _3df2u _2po2r cRfUr" title=""><span class=""><i
                         class="fa fa-folder-open _22XWG"></i>移动文章
                         <div class="_3x4X_">
@@ -324,6 +325,20 @@ export default {
       }).catch(error => {
         this.$message.error("添加文章失败!请联系客服工作人员!");
       })
+    },
+    pub_article() {
+      // 切换文章发布状态
+      let article = this.article_list[this.current_article];
+      this.$axios.patch(`${this.$settings.Host}/article/${article.id}/`, {}, {
+        headers: {
+          Authorization: "jwt " + this.token,
+        }
+      }).then(response => {
+        article.is_public = !article.is_public;
+      }).catch(error => {
+        this.$message.error("添加文章失败!请联系客服工作人员!");
+      });
+      this.is_show_article_menu = false;
     },
     // 绑定@imgAdd event
     imgAdd(pos, $file) {
