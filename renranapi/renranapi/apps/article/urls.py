@@ -11,4 +11,5 @@ urlpatterns = [
     path("image/", views.ArticleImageAPIView.as_view()),
     path("special/", views.SpecialAPIView.as_view()),
     path("post/", views.ArticlePostAPIView.as_view()),
+    re_path(r"^(?P<pk>\d+)/retrieve/$", views.ArticleRetrieveAPIView.as_view()),
 ]

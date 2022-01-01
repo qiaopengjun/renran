@@ -4,97 +4,100 @@
     <div class="_3VRLsv" role="main">
       <div class="_gp-ck">
         <section class="ouvJEz">
-          <h1 class="_1RuRku">废掉一个人最快的方法，就是让他闲着</h1>
+          <h1 class="_1RuRku">{{article.title}}</h1>
           <div class="rEsl9f">
             <div class="_2mYfmT">
-              <a class="_1OhGeD" href="/u/a70487cda447" target="_blank" rel="noopener noreferrer"><img class="_13D2Eh"
-                                                                                                       src="https://upload.jianshu.io/users/upload_avatars/18529254/.png?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96/format/webp"
-                                                                                                       alt=""/></a>
+              <router-link class="_1OhGeD" to="/user" target="_blank" rel="noopener noreferrer"><img class="_13D2Eh" :src="article.user.avatar" alt="" /></router-link>
+<!--              <a class="_1OhGeD" href="/u/a70487cda447" target="_blank" rel="noopener noreferrer"><img class="_13D2Eh" src="https://upload.jianshu.io/users/upload_avatars/18529254/.png?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96/format/webp" alt=""/></a>-->
               <div style="margin-left: 8px;">
                 <div class="_3U4Smb">
-                  <span class="FxYr8x"><a class="_1OhGeD" href="/u/a70487cda447" target="_blank"
-                                          rel="noopener noreferrer">書酱</a></span>
+                  <span class="FxYr8x"><router-link class="_1OhGeD" to="/user">{{article.user.nickname?article.user.nickname:article.user.username}}</router-link></span>
+<!--                  <span class="FxYr8x"><a class="_1OhGeD" href="/u/a70487cda447" target="_blank" rel="noopener noreferrer">書酱</a></span>-->
                   <button data-locale="zh-CN" type="button" class="_3kba3h _1OyPqC _3Mi9q9 _34692-"><span>关注</span>
                   </button>
                 </div>
                 <div class="s-dsoj">
-                  <time datetime="2020-01-08T12:01:00.000Z">2020.01.08 20:01:00</time>
-                  <span>字数 2,510</span>
-                  <span>阅读 168</span>
+                    <time :datetime="format(article.created_time)">{{format(article.created_time)}}</time>
+                    <span>字数 {{article.html_content==null?0:article.html_content.length}}</span>
+                    <span>阅读 {{article.read_count}}</span>
+<!--                  <time datetime="2020-01-08T12:01:00.000Z">2020.01.08 20:01:00</time>-->
+<!--                  <span>字数 2,510</span>-->
+<!--                  <span>阅读 168</span>-->
                 </div>
               </div>
             </div>
           </div>
           <article class="_2rhmJa">
-            <div class="image-package">
-              <div class="image-container" style="max-width: 640px; max-height: 420px; background-color: transparent;">
-                <div class="image-container-fill" style="padding-bottom: 65.63%;"></div>
-                <div class="image-view" data-width="640" data-height="420">
-                  <img
-                    src="https://upload-images.jianshu.io/upload_images/18529254-f62fac0d998cff23?imageMogr2/auto-orient/strip|imageView2/2/w/640/format/webp"/>
-                </div>
-              </div>
-              <div class="image-caption"></div>
-            </div>
-            <p>文/小鸟飞过</p>
-            <p>罗曼&middot;罗兰说：“生活中最沉重的负担不是工作，而是无聊。”</p>
-            <div class="image-package">
-              <div class="image-container" style="max-width: 700px; max-height: 152px; background-color: transparent;">
-                <div class="image-container-fill" style="padding-bottom: 14.069999999999999%;"></div>
-                <div class="image-view" data-width="1080" data-height="152">
-                  <img
-                    src="http://upload-images.jianshu.io/upload_images/18529254-a932f0ad8fbd51bb?imageMogr2/auto-orient/strip|imageView2/2/w/1080/format/webp"/>
-                </div>
-              </div>
-              <div class="image-caption"></div>
-            </div>
-            <p><strong>废掉一个人最快的方法</strong></p>
-            <p><strong>就是让他闲着</strong></p>
-            <p>这段时间，综艺节目《妻子的浪漫旅行第三季3》正在热播，四对明星夫妻的相处模式曝光，也让观众更了解了曾经饱受争议的女人唐一菲。</p>
-            <p>有人很喜欢她大大咧咧的女侠性格，有人为她叫屈，当然还是有人骂她，说她旧事重提。</p>
-            <p>而我，则是觉得非常惋惜。</p>
-            <p>唐一菲是中央戏剧学院表演系毕业，真正的科班出身。</p>
-            <p>从2003年到2011年，基本保证每年都有作品，要么拍电视剧、要么拍电影，2008年出演新版《红楼梦》的秦可卿也是颇为动人。</p>
-            <div class="image-package">
-              <div class="image-container" style="max-width: 533px; max-height: 510px; background-color: transparent;">
-                <div class="image-container-fill" style="padding-bottom: 95.67999999999999%;"></div>
-                <div class="image-view" data-width="533" data-height="510">
-                  <img
-                    src="http://upload-images.jianshu.io/upload_images/18529254-d92ace292d78aecb?imageMogr2/auto-orient/strip|imageView2/2/w/533/format/webp"/>
-                </div>
-              </div>
-              <div class="image-caption"></div>
-            </div>
-            <p>可是自2012年结婚后，8年时间里，只拍了一部电视剧，就再也没了一点儿消息，仿佛整个人生都停滞了。</p>
-            <p>她在《妻子3》中展现出的婚姻状态是非常可悲的。</p>
-            <p>一喝酒，就是吐槽自己的人生被毁了。</p>
-            <div class="image-package">
-              <div class="image-container" style="max-width: 532px; max-height: 394px;">
-                <div class="image-container-fill" style="padding-bottom: 74.06%;"></div>
-                <div class="image-view" data-width="532" data-height="394">
-                  <img data-original-src="//upload-images.jianshu.io/upload_images/18529254-5f20af5bb10bfa12"
-                       data-original-width="532" data-original-height="394" data-original-format="image/jpeg"
-                       data-original-filesize="17915" data-image-index="3" style="cursor: zoom-in;"
-                       class="image-loading"/>
-                </div>
-              </div>
-              <div class="image-caption"></div>
-            </div>
-            <p>要么直接形容老公凌潇肃是缩头乌龟。</p>
-            <div class="image-package">
-              <div class="image-container" style="max-width: 506px; max-height: 360px;">
-                <div class="image-container-fill" style="padding-bottom: 71.15%;"></div>
-                <div class="image-view" data-width="506" data-height="360">
-                  <img data-original-src="//upload-images.jianshu.io/upload_images/18529254-f2478cdc59c7e193"
-                       data-original-width="506" data-original-height="360" data-original-format="image/jpeg"
-                       data-original-filesize="23772" data-image-index="4" style="cursor: zoom-in;"
-                       class="image-loading"/>
-                </div>
-              </div>
-              <div class="image-caption"></div>
-            </div>
-            <p>作者简介：小鸟飞过，富小书的人，富书专栏作者，写温暖的文字，传递美好的情感；本文首发富小书（ID：fxsfrc），你身边最好的闺蜜，富书2018重磅推出新书《好好生活》。</p>
-            <p><strong>注：本文章图片来源网络，如有侵权，请联系删除。</strong></p>
+            <div v-html="article.html_content"></div>
+<!--            <div class="image-package">-->
+<!--              <div class="image-container" style="max-width: 640px; max-height: 420px; background-color: transparent;">-->
+<!--                <div class="image-container-fill" style="padding-bottom: 65.63%;"></div>-->
+<!--                <div class="image-view" data-width="640" data-height="420">-->
+<!--                  <img-->
+<!--                    src="https://upload-images.jianshu.io/upload_images/18529254-f62fac0d998cff23?imageMogr2/auto-orient/strip|imageView2/2/w/640/format/webp"/>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="image-caption"></div>-->
+<!--            </div>-->
+<!--            <p>文/小鸟飞过</p>-->
+<!--            <p>罗曼&middot;罗兰说：“生活中最沉重的负担不是工作，而是无聊。”</p>-->
+<!--            <div class="image-package">-->
+<!--              <div class="image-container" style="max-width: 700px; max-height: 152px; background-color: transparent;">-->
+<!--                <div class="image-container-fill" style="padding-bottom: 14.069999999999999%;"></div>-->
+<!--                <div class="image-view" data-width="1080" data-height="152">-->
+<!--                  <img-->
+<!--                    src="http://upload-images.jianshu.io/upload_images/18529254-a932f0ad8fbd51bb?imageMogr2/auto-orient/strip|imageView2/2/w/1080/format/webp"/>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="image-caption"></div>-->
+<!--            </div>-->
+<!--            <p><strong>废掉一个人最快的方法</strong></p>-->
+<!--            <p><strong>就是让他闲着</strong></p>-->
+<!--            <p>这段时间，综艺节目《妻子的浪漫旅行第三季3》正在热播，四对明星夫妻的相处模式曝光，也让观众更了解了曾经饱受争议的女人唐一菲。</p>-->
+<!--            <p>有人很喜欢她大大咧咧的女侠性格，有人为她叫屈，当然还是有人骂她，说她旧事重提。</p>-->
+<!--            <p>而我，则是觉得非常惋惜。</p>-->
+<!--            <p>唐一菲是中央戏剧学院表演系毕业，真正的科班出身。</p>-->
+<!--            <p>从2003年到2011年，基本保证每年都有作品，要么拍电视剧、要么拍电影，2008年出演新版《红楼梦》的秦可卿也是颇为动人。</p>-->
+<!--            <div class="image-package">-->
+<!--              <div class="image-container" style="max-width: 533px; max-height: 510px; background-color: transparent;">-->
+<!--                <div class="image-container-fill" style="padding-bottom: 95.67999999999999%;"></div>-->
+<!--                <div class="image-view" data-width="533" data-height="510">-->
+<!--                  <img-->
+<!--                    src="http://upload-images.jianshu.io/upload_images/18529254-d92ace292d78aecb?imageMogr2/auto-orient/strip|imageView2/2/w/533/format/webp"/>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="image-caption"></div>-->
+<!--            </div>-->
+<!--            <p>可是自2012年结婚后，8年时间里，只拍了一部电视剧，就再也没了一点儿消息，仿佛整个人生都停滞了。</p>-->
+<!--            <p>她在《妻子3》中展现出的婚姻状态是非常可悲的。</p>-->
+<!--            <p>一喝酒，就是吐槽自己的人生被毁了。</p>-->
+<!--            <div class="image-package">-->
+<!--              <div class="image-container" style="max-width: 532px; max-height: 394px;">-->
+<!--                <div class="image-container-fill" style="padding-bottom: 74.06%;"></div>-->
+<!--                <div class="image-view" data-width="532" data-height="394">-->
+<!--                  <img data-original-src="//upload-images.jianshu.io/upload_images/18529254-5f20af5bb10bfa12"-->
+<!--                       data-original-width="532" data-original-height="394" data-original-format="image/jpeg"-->
+<!--                       data-original-filesize="17915" data-image-index="3" style="cursor: zoom-in;"-->
+<!--                       class="image-loading"/>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="image-caption"></div>-->
+<!--            </div>-->
+<!--            <p>要么直接形容老公凌潇肃是缩头乌龟。</p>-->
+<!--            <div class="image-package">-->
+<!--              <div class="image-container" style="max-width: 506px; max-height: 360px;">-->
+<!--                <div class="image-container-fill" style="padding-bottom: 71.15%;"></div>-->
+<!--                <div class="image-view" data-width="506" data-height="360">-->
+<!--                  <img data-original-src="//upload-images.jianshu.io/upload_images/18529254-f2478cdc59c7e193"-->
+<!--                       data-original-width="506" data-original-height="360" data-original-format="image/jpeg"-->
+<!--                       data-original-filesize="23772" data-image-index="4" style="cursor: zoom-in;"-->
+<!--                       class="image-loading"/>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="image-caption"></div>-->
+<!--            </div>-->
+<!--            <p>作者简介：小鸟飞过，富小书的人，富书专栏作者，写温暖的文字，传递美好的情感；本文首发富小书（ID：fxsfrc），你身边最好的闺蜜，富书2018重磅推出新书《好好生活》。</p>-->
+<!--            <p><strong>注：本文章图片来源网络，如有侵权，请联系删除。</strong></p>-->
           </article>
           <div></div>
           <div class="_1kCBjS">
@@ -131,7 +134,7 @@
                 <svg width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class="">
                   <use xlink:href="#ic-notebook"></use>
                 </svg>
-              </i><span>随笔</span></a>
+              </i><span>{{article.collection.name}}</span></a>
               <div class="_3BUZPB ant-dropdown-trigger">
                 <div class="_2Bo4Th">
                   <i aria-label="ic-others" class="anticon">
@@ -158,7 +161,7 @@
             <div class="Uz-vZq">
               <div class="Cqpr1X">
                 <a class="HC3FFO _1OhGeD" href="/u/a70487cda447" title="書酱" target="_blank"
-                   rel="noopener noreferrer">書酱</a>
+                   rel="noopener noreferrer">{{article.user.nickname?article.user.nickname:article.user.username}}</a>
                 <span class="_2WEj6j" title="你读书的样子真好看。">你读书的样子真好看。</span>
               </div>
               <div class="lJvI3S">
@@ -185,7 +188,7 @@
               <div class="_2O0T_w">
                 <div class="_2v-h3G">
                   <span class="_2vh4fr" title="書酱"><a class="_1OhGeD" href="/u/a70487cda447" target="_blank"
-                                                      rel="noopener noreferrer">書酱</a></span>
+                                                      rel="noopener noreferrer">{{article.user.nickname?article.user.nickname:article.user.username}}</a></span>
                 </div>
                 <button data-locale="zh-CN" type="button" class="tzrf9N _1OyPqC _3Mi9q9 _34692-"><span>关注</span>
                 </button>
@@ -259,6 +262,44 @@ export default {
   components: {
     Header,
     Footer,
+  },
+  data() {
+    return {
+      article: {
+        collection: {},
+        user: {},
+      },
+    }
+  },
+  created() {
+    // 获取路由参数
+    this.article.id = this.$route.params.id;
+    this.get_article();
+  },
+  methods: {
+    get_article() {
+      // 获取文章内容信息
+      this.$axios.get(`${this.$settings.Host}/article/${this.article.id}/retrieve/`).then(response => {
+        this.article = response.data;
+      }).catch(error => {
+        this.$message.error("网络异常，获取文章信息失败！");
+      })
+    },
+    format(time) {
+      time = new Date(time);
+      let Y = time.getFullYear();
+      let m = time.getMonth() + 1;
+      m = m < 10 ? ('0' + m) : m;
+      let d = time.getDate();
+      d = d < 10 ? ('0' + d) : d;
+      let H = time.getHours();
+      H = H < 10 ? ('0' + H) : H;
+      let M = time.getMinutes();
+      M = M < 10 ? ('0' + M) : M;
+      let S = time.getSeconds();
+      S = S < 10 ? ('0' + S) : S;
+      return `${Y}-${m}-${d} ${H}:${M}:${S}`;
+    }
   }
 }
 </script>

@@ -1,9 +1,9 @@
 from django.shortcuts import render
-from rest_framework.generics import ListAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from .models import ArticleCollection, Article, ArticleImage, ArticleSpecial, ArticlePostSpecial
 from .serializers import CollectionModelSerializer, ArticleModelSerializer, ArticleImageModelSerializer, \
-    SpecialModelSerializer
+    SpecialModelSerializer, ArticleRetrieveModelSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.utils import timezone as datetime
@@ -210,3 +210,9 @@ class ArticlePostAPIView(APIView):
 
         # 返回响应信息
         return Response({"detail": "投稿成功！"})
+
+
+class ArticleRetrieveAPIView(RetrieveAPIView):
+    """文章详情"""
+    queryset = Article.objects.filter(is_deleted=False, is_show=True, is_public=True)
+    serializer_class = ArticleRetrieveModelSerializer

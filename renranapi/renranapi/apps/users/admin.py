@@ -6,11 +6,11 @@ from .models import User
 
 # Register your models here.
 class UserModelAdmin(UserAdmin, admin.ModelAdmin):
-    list_display = ["id", "username",  "mobile"]
+    list_display = ["id", "avatar_small", "username",  "mobile"]
     # # fieldsets 和 add_fieldsets 都在从UserAdmin中复制粘贴过来，重写加上自己需要的字段的。
     # 更新数据时的表单配置项
     fieldsets = (
-        (None, {'fields': ('username', 'password', )}),
+        (None, {'fields': ('username', 'password', "avatar")}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
         (_('Permissions'), {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),

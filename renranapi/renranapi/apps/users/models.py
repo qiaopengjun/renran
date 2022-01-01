@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils.safestring import mark_safe
 
 # Create your models here.
 # AbstractUser 是django内部的auth模块里面声明的抽象模型，
@@ -31,3 +32,15 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.nickname if self.nickname else self.username
+
+    def avatar_small(self):
+        if self.avatar:
+            return mark_safe(
+                # f'<img style="border-radius: 0%;max-height: 60px; max-width: 200px;" src="{self.image.url}">')
+                # f'<img style="border-radius: 100%;" src="{self.avatar.thumb_50x50.url}">')
+                f'<img style="border-radius: 0%; max-height: 50px; max-width: 50px;" src="{self.avatar.url}">')
+        return ""
+
+    avatar_small.short_description = "个人头像(50x50)"
+    avatar_small.allow_tags = True
+    avatar_small.admin_order_field = "avatar"
