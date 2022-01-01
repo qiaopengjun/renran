@@ -488,11 +488,29 @@ export default {
       this.int_save_article();
     },
     // 绑定@imgAdd event
-    imgAdd(pos, $file) {
+    imgAdd(filename, $file) {
       // 添加文件
+      // 把富文本编辑器中的图片上传到服务端，因为服务端使用了docker部署的FastDFS，所以一定要检查nginx容器是否启动了
+      let formdata = new FormData();
+      formdata.append('image', $file);
+      // formdata.append('title', '新增数据');
+      // formdata.append('title', '新增数据');
+      this.$axios.post(`${this.$settings.Host}/article/image/`, formdata, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: "jwt " + this.token,
+        },
+      }).then(response => {
+        // 第二步.将返回的url替换到文本原位置![...](0) -> ![...](url)
+        this.$refs.md.$img2Url(filename, response.data.image);
+      });
     },
-    imgDel(pos) {
+    imgDel(filename) {
       // 删除文件
+      delete this.img_file[filename];  // 前段删除,一般服务端不删除
+      this.$refs.toolbar_left.$imgDelByFilename(filename);
+      // 发送ajax删除后端图片
+
     },
     timeformat(time) {
       time = new Date(time);
