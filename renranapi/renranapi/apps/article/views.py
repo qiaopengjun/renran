@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from rest_framework.generics import ListAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
-from .models import ArticleCollection, Article
-from .serializers import CollectionModelSerializer, ArticleModelSerializer
+from .models import ArticleCollection, Article, ArticleImage
+from .serializers import CollectionModelSerializer, ArticleModelSerializer, ArticleImageModelSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.utils import timezone as datetime
@@ -136,3 +136,8 @@ class ArticleInfoAPIView(APIView):
         article.save()
 
         return Response({"detail": "编辑文章保存成功!"})
+
+
+class ArticleImageAPIView(CreateAPIView):
+    queryset = ArticleImage.objects.all()
+    serializer_class = ArticleImageModelSerializer
