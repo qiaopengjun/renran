@@ -406,6 +406,8 @@ export default {
         } else {
           // 文章发布
           article.is_public = true;
+          // 跳转到投稿页面
+          this.$router.push("/post");
         }
         // article.is_public = !article.is_public;
       }).catch(error => {

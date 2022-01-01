@@ -72,17 +72,21 @@ class ArticlePostSpecial(BaseModel):
     special = models.ForeignKey(ArticleSpecial, on_delete=models.CASCADE, verbose_name="专题")
     status = models.SmallIntegerField(choices=STATUS_OPTION, default=0, verbose_name="审核状态")
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.DO_NOTHING, verbose_name="审核管理员")
+    post_time = models.DateTimeField(default=None, null=True, blank=True, verbose_name="投稿时间")
 
     class Meta:
         db_table = "rr_article_post_special"
         verbose_name = "专题的文章"
         verbose_name_plural = verbose_name
 
+    def __str__(self):
+        return self.article.title
+
 
 class SpecialManager(BaseModel):
     """专题管理员"""
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="用户")
-    special = models.ForeignKey(ArticleSpecial, on_delete=models.CASCADE, verbose_name="专题")
+    special = models.ForeignKey(ArticleSpecial, related_name="mymanager", on_delete=models.CASCADE, verbose_name="专题")
 
     class Meta:
         db_table = "rr_special_manager"

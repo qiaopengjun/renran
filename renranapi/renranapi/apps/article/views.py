@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from rest_framework.generics import ListAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
-from .models import ArticleCollection, Article, ArticleImage
-from .serializers import CollectionModelSerializer, ArticleModelSerializer, ArticleImageModelSerializer
+from .models import ArticleCollection, Article, ArticleImage, ArticleSpecial
+from .serializers import CollectionModelSerializer, ArticleModelSerializer, ArticleImageModelSerializer, SpecialModelSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.utils import timezone as datetime
@@ -139,5 +139,18 @@ class ArticleInfoAPIView(APIView):
 
 
 class ArticleImageAPIView(CreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = ArticleImage.objects.all()
     serializer_class = ArticleImageModelSerializer
+
+
+class SpecialAPIView(ListAPIView):
+    """专题视图"""
+    permission_classes = [IsAuthenticated]
+    serializer_class = SpecialModelSerializer
+
+    def get_queryset(self):
+        # /article/special/
+        # 使用逆向字段作为条件查询数据
+        return ArticleSpecial.objects.filter(is_deleted=False, is_show=True,
+                                             mymanager__user=self.request.user).order_by("orders", "id")
