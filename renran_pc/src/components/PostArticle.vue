@@ -29,9 +29,9 @@
           <div class="_18jMg">
             <h3>我管理的专题<a href="">新建</a></h3>
             <ul class="_1hEmG">
-              <li class="_3GDE6" v-for="special in my_special_list">
+              <li class="_3GDE6" v-for="(special, key) in my_special_list">
                 <a v-if="special.post_status">已收录</a>
-                <a v-else>收录</a>
+                <a v-else @click="post_article(special.id, key)">收录</a>
                 <img :src="special.image">
                 <span class="_1CN24" :title="special.name">{{ special.name }}</span>
                 <!--                <img alt="png" src="https://upload.jianshu.io/collections/images/83/1.jpg">-->
@@ -120,6 +120,21 @@ export default {
     this.get_my_special_list();
   },
   methods: {
+    post_article(special_id, key) {
+      // 文章投稿
+      this.$axios.post(`${this.$settings.Host}/article/post/`, {
+        article_id: this.article_id,
+        special_id: special_id,
+      }, {
+        headers: {
+          Authorization: "jwt " + this.token,
+        }
+      }).then(response => {
+        this.my_special_list[key].post_status = true;
+      }).catch(error => {
+        this.$message.error("投稿失败！");
+      });
+    },
     get_article() {
       // 从本地存储中提取Writer.vue中记录的文章ID和标题
       this.article_id = localStorage.article_id;

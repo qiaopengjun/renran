@@ -10,4 +10,5 @@ urlpatterns = [
     re_path(r"^(?P<pk>\d+)/info/$", views.ArticleInfoAPIView.as_view()),
     path("image/", views.ArticleImageAPIView.as_view()),
     path("special/", views.SpecialAPIView.as_view()),
+    path("post/", views.ArticlePostAPIView.as_view()),
 ]
