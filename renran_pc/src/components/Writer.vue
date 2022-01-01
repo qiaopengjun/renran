@@ -122,7 +122,7 @@
           </div>
         </div>
       </div>
-      <input type="text" class="_24i7u" value="2020-01-12">
+      <input type="text" class="_24i7u" v-model="editorTitle">
       <div id="editor">
         <mavon-editor
           style="height: 100%"
@@ -179,7 +179,8 @@ export default {
   data() {
     return {
       token: "",
-      editorContent: "",
+      editorTitle: "",  // 当前操作的文章标题
+      editorContent: "", // 当前操作的文章内容
       img_file: [],
       collection_form: false,
       is_show_page: false, // 控制是否显示页面
@@ -207,6 +208,10 @@ export default {
     current_article() {
       // 切换操作的文章
       this.is_show_article_menu = false;
+      if (this.article_list.length > 0) {
+        this.editorTitle = this.article_list[this.current_article].title;
+        this.editorContent = this.article_list[this.current_article].content;
+      }
     }
   },
   mounted() {
