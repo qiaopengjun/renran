@@ -8,6 +8,7 @@ import ResetPassword from "../components/ResetPassword";
 import QQCallBack from "../components/QQCallBack"
 import Writer from "../components/Writer";
 import PostArticle from "../components/PostArticle"
+import Article from "../components/Article";
 
 Vue.use(Router)
 
@@ -88,5 +89,10 @@ export default new Router({
       name: "PostArticle",
       component: PostArticle,
     },
+    {
+       name:"Article",
+       path:"/article/:id",
+       component: Article,
+     },
   ]
 })

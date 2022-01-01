@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ArticleCollection, Article
+from .models import ArticleCollection, Article, ArticleSpecial
 
 
 # Register your models here.
@@ -18,3 +18,12 @@ class ArticleModelAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Article, ArticleModelAdmin)
+
+
+class ArticleSpecialModelAdmin(admin.ModelAdmin):
+    """专题"""
+    list_display = ["id", "name", "image_html", "notice", "article_count", "follow_count", "user"]
+    ordering = ["id"]
+
+
+admin.site.register(ArticleSpecial, ArticleSpecialModelAdmin)

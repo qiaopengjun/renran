@@ -1,6 +1,7 @@
 from django.db import models
 from renranapi.utils.models import BaseModel
 from users.models import User
+from django.utils.safestring import mark_safe
 
 
 # Create your models here.
@@ -66,6 +67,16 @@ class ArticleSpecial(BaseModel):
             return True
         except:
             return False
+
+    def image_html(self):
+        if self.image:
+            return mark_safe(
+                f'<img style="border-radius: 0%;max-height: 60px; max-width: 200px;" src="{self.image.url}">')
+        return ""
+
+    image_html.short_description = "封面图片"
+    image_html.allow_tags = True
+    image_html.admin_order_field = "image"
 
 
 class ArticlePostSpecial(BaseModel):
