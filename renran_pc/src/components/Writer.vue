@@ -186,8 +186,8 @@ export default {
       editorRender: "", //  当前操作的文章内容[html格式内容]
       img_file: [],
       collection_form: false,
-      is_show_page: false, // 控制是否显示页面
       collection_name: "",  // 本次新增的文集名称
+      is_show_page: false,   // 控制是否显示页面
       collection_list: [],    // 当前登录用户的文集列表
       current_collection: 0, // 当前用户选中操作的文集下标,默认为第一个文集,也就是下标为0的文集
       is_show_collection_menu: false, // 控制文集菜单是否显示
@@ -380,6 +380,10 @@ export default {
           this.article_list.push(response.data);
           this.current_article = this.article_list.length - 1;
         }
+        if (this.article_list.length > 0) {
+          this.editorTitle = this.article_list[this.current_article].title;
+          this.editorContent = this.article_list[this.current_article].content;
+        }
       }).catch(error => {
         this.$message.error("添加文章失败!请联系客服工作人员!");
       })
@@ -406,10 +410,12 @@ export default {
         } else {
           // 文章发布
           article.is_public = true;
+          // 记录当前发布的文章标题和文章ID
+          localStorage.article_id = this.article_list[this.current_article].id;
+          localStorage.article_title = this.article_list[this.current_article].title;
           // 跳转到投稿页面
           this.$router.push("/post");
         }
-        // article.is_public = !article.is_public;
       }).catch(error => {
         this.$message.error("添加文章失败!请联系客服工作人员!");
       });
@@ -482,7 +488,7 @@ export default {
     int_save_article() {
       // 延时保存文章内容
       clearTimeout(this.timer); // 每次调用保存时，先把目前运行的定时器关闭，重新进行3秒倒计时
-      this.timer = setTimeout(this.save_article, 3000);
+      this.timer = setTimeout(this.save_article, 2000);
     },
     change_article(content, html_content) {
       this.editorContent = content;
@@ -491,9 +497,8 @@ export default {
     },
     // 绑定@imgAdd event
     imgAdd(filename, $file) {
-      // 添加文件
       // 把富文本编辑器中的图片上传到服务端，因为服务端使用了docker部署的FastDFS，所以一定要检查nginx容器是否启动了
-      let formdata = new FormData();
+      var formdata = new FormData();
       formdata.append('image', $file);
       // formdata.append('title', '新增数据');
       // formdata.append('title', '新增数据');
@@ -512,11 +517,22 @@ export default {
       delete this.img_file[filename];  // 前段删除,一般服务端不删除
       this.$refs.toolbar_left.$imgDelByFilename(filename);
       // 发送ajax删除后端图片
-
     },
     timeformat(time) {
       time = new Date(time);
-      return `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()} ${time.getHours()}:${time.getMinutes()}`;
+      let Y = time.getFullYear();
+      let m = time.getMonth() + 1;
+      m = m < 10 ? ('0' + m) : m;
+      let d = time.getDate();
+      d = d < 10 ? ('0' + d) : d;
+      let H = time.getHours();
+      H = H < 10 ? ('0' + H) : H;
+      let M = time.getMinutes();
+      M = M < 10 ? ('0' + M) : M;
+      let S = time.getSeconds();
+      S = S < 10 ? ('0' + S) : S;
+      return `${Y}-${m}-${d} ${H}:${M}:${S}`;
+      // return `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()} ${time.getHours()}:${time.getMinutes()}`;
     }
 
   }

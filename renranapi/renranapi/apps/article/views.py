@@ -151,6 +151,13 @@ class SpecialAPIView(ListAPIView):
 
     def get_queryset(self):
         # /article/special/
+        article_id = self.request.query_params.get("article_id")
+        print(f"article_id {article_id}")
         # 使用逆向字段作为条件查询数据
-        return ArticleSpecial.objects.filter(is_deleted=False, is_show=True,
+        special_list = ArticleSpecial.objects.filter(is_deleted=False, is_show=True,
                                              mymanager__user=self.request.user).order_by("orders", "id")
+        for special in special_list:
+            # 给每一个专题模型新增一个字段，表示当前文章的收录状态
+            special.post_status = special.check_post_status(article_id)
+
+        return special_list

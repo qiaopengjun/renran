@@ -29,23 +29,24 @@
           <div class="_18jMg">
             <h3>我管理的专题<a href="">新建</a></h3>
             <ul class="_1hEmG">
-              <li class="_3GDE6"  v-for="special in my_special_list">
-                <a>收录</a>
+              <li class="_3GDE6" v-for="special in my_special_list">
+                <a v-if="special.post_status">已收录</a>
+                <a v-else>收录</a>
                 <img :src="special.image">
-                <span class="_1CN24" :title="special.name">{{special.name}}</span>
-<!--                <img alt="png" src="https://upload.jianshu.io/collections/images/83/1.jpg">-->
-<!--                <span class="_1CN24" title="摄影">摄影</span>-->
+                <span class="_1CN24" :title="special.name">{{ special.name }}</span>
+                <!--                <img alt="png" src="https://upload.jianshu.io/collections/images/83/1.jpg">-->
+                <!--                <span class="_1CN24" title="摄影">摄影</span>-->
               </li>
-<!--              <li class="_3GDE6">-->
-<!--                <a>收录</a>-->
-<!--                <img alt="png" src="https://upload.jianshu.io/collections/images/83/1.jpg">-->
-<!--                <span class="_1CN24" title="摄影">摄影</span>-->
-<!--              </li>-->
-<!--              <li class="_3GDE6">-->
-<!--                <a>收录</a>-->
-<!--                <img alt="png" src="https://upload.jianshu.io/collections/images/83/1.jpg">-->
-<!--                <span class="_1CN24" title="摄影">摄影</span>-->
-<!--              </li>-->
+              <!--              <li class="_3GDE6">-->
+              <!--                <a>收录</a>-->
+              <!--                <img alt="png" src="https://upload.jianshu.io/collections/images/83/1.jpg">-->
+              <!--                <span class="_1CN24" title="摄影">摄影</span>-->
+              <!--              </li>-->
+              <!--              <li class="_3GDE6">-->
+              <!--                <a>收录</a>-->
+              <!--                <img alt="png" src="https://upload.jianshu.io/collections/images/83/1.jpg">-->
+              <!--                <span class="_1CN24" title="摄影">摄影</span>-->
+              <!--              </li>-->
             </ul>
           </div>
           <div class="_18jMg">
@@ -115,16 +116,28 @@ export default {
   },
   created() {
     this.token = this.$settings.check_user_login(this);
+    this.get_article();
     this.get_my_special_list();
   },
   methods: {
+    get_article() {
+      // 从本地存储中提取Writer.vue中记录的文章ID和标题
+      this.article_id = localStorage.article_id;
+      console.log("this.article_id", this.article_id)
+      this.article_title = localStorage.article_title;
+    },
     get_my_special_list() {
+      // 我管理的文章信息
       this.$axios.get(`${this.$settings.Host}/article/special/`, {
+        params: {
+          article_id: this.article_id,
+        },
         headers: {
           Authorization: "jwt " + this.token,
         }
       }).then(response => {
         this.my_special_list = response.data;
+        console.log("this.my_special_list", this.my_special_list)
       }).catch(error => {
         console.log(error.response);
         if (error.response.status === 401) {

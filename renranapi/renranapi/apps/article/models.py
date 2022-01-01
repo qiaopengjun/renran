@@ -59,17 +59,25 @@ class ArticleSpecial(BaseModel):
     def __str__(self):
         return self.name
 
+    def check_post_status(self, article_id):
+        """判断当前文章对于专题的收录状态"""
+        try:
+            self.myarticles.get(article_id=int(article_id), status=2)
+            return True
+        except:
+            return False
+
 
 class ArticlePostSpecial(BaseModel):
     """文章和专题的绑定关系"""
     STATUS_OPTION = (
         (0, "投稿中"),
         (1, "等待审核"),
-        (2, "已审核"),
+        (2, "审核通过"),
         (3, "审核不通过"),
     )
     article = models.ForeignKey(Article, on_delete=models.CASCADE, verbose_name="文章")
-    special = models.ForeignKey(ArticleSpecial, on_delete=models.CASCADE, verbose_name="专题")
+    special = models.ForeignKey(ArticleSpecial, related_name="myarticles", on_delete=models.CASCADE, verbose_name="专题")
     status = models.SmallIntegerField(choices=STATUS_OPTION, default=0, verbose_name="审核状态")
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.DO_NOTHING, verbose_name="审核管理员")
     post_time = models.DateTimeField(default=None, null=True, blank=True, verbose_name="投稿时间")

@@ -90,7 +90,8 @@ class ArticleImageModelSerializer(serializers.ModelSerializer):
 
 class SpecialModelSerializer(serializers.ModelSerializer):
     """专题序列化器"""
+    post_status = serializers.BooleanField(read_only=True, default=False, label="文章对于专题的发布状态")
 
     class Meta:
         model = ArticleSpecial
-        fields = ("id", "name", "image", "notice", "article_count", "follow_count")
+        fields = ("id", "name", "image", "notice", "article_count", "follow_count", "post_status")
