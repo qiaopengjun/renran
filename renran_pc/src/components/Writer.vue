@@ -129,6 +129,7 @@
           v-model="editorContent"
           :ishljs="true"
           ref=md
+          @change="change_article"
           @imgAdd="imgAdd"
           @imgDel="imgDel"
         ></mavon-editor>
@@ -181,6 +182,7 @@ export default {
       token: "",
       editorTitle: "",  // 当前操作的文章标题
       editorContent: "", // 当前操作的文章内容
+      editorRender: "", //  当前操作的文章内容[html格式内容]
       img_file: [],
       collection_form: false,
       is_show_page: false, // 控制是否显示页面
@@ -196,8 +198,12 @@ export default {
     }
   },
   watch: {
+    editorTitle() {
+      this.save_article();
+    },
     editorContent() {
       console.log(this.editorContent)
+      this.article_list[this.current_article].content = this.editorContent;
     },
     current_collection() {
       // 切换操作的文集
@@ -210,7 +216,7 @@ export default {
       this.is_show_article_menu = false;
       if (this.article_list.length > 0) {
         this.editorTitle = this.article_list[this.current_article].title;
-        this.editorContent = this.article_list[this.current_article].content;
+        this.editorContent = this.article_list[this.current_article].content || "";
       }
     }
   },
@@ -345,6 +351,10 @@ export default {
         }
       }).then(response => {
         this.article_list = response.data;
+        if (this.article_list.length > 0) {
+          this.editorTitle = this.article_list[this.current_article].title;
+          this.editorContent = this.article_list[this.current_article].content || "";
+        }
       }).catch(error => {
         this.$message.error("获取文章列表失败!");
       });
@@ -438,6 +448,35 @@ export default {
       }).catch(error => {
         this.$message.error("定时发布文章设置失败!");
       });
+    },
+    save_article() {
+      // 保存文章标题和内容信息
+      let article = this.article_list[this.current_article];
+      if (this.editorContent == null) {
+        this.editorContent = "";
+      }
+      if (this.editorRender == null) {
+        this.editorRender = "";
+      }
+      this.$axios.put(`${this.$settings.Host}/article/${article.id}/info/`, {
+        title: this.editorTitle,
+        content: this.editorContent,
+        html_content: this.editorRender,
+      }, {
+        headers: {
+          Authorization: "jwt " + this.token,
+        }
+      }).then(response => {
+        article.title = this.editorTitle;
+        article.content = this.editorContent;
+        article.html_content = this.editorRender;
+      }).catch(error => {
+        this.$message.error("网络异常，编辑的文章内容无法保存，请及时对当前内容进行备份处理并联系客服工作人员！");
+      });
+    },
+    change_article(content, html_content) {
+      this.editorContent = content;
+      this.editorRender = html_content;
     },
     // 绑定@imgAdd event
     imgAdd(pos, $file) {

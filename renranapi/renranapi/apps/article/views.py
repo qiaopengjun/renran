@@ -99,6 +99,7 @@ class ArticleAPIView(ListAPIView, CreateAPIView):
 
 
 class ArticleInfoAPIView(APIView):
+    """文章信息"""
     permission_classes = [IsAuthenticated]
 
     def patch(self, request, pk):
@@ -121,3 +122,17 @@ class ArticleInfoAPIView(APIView):
         article.save()
 
         return Response({"detail": "定时发布文章设置成功!"})
+
+    def put(self, request, pk):
+        """文章内容保存"""
+        try:
+            article = Article.objects.get(pk=pk, is_deleted=False, is_show=True, user=self.request.user)
+        except Article.DoesNotExist:
+            return Response({"detail": "当前文章不存在!"})
+
+        article.title = request.data.get("title")
+        article.content = request.data.get("content")
+        article.html_content = request.data.get("html_content")
+        article.save()
+
+        return Response({"detail": "编辑文章保存成功!"})
