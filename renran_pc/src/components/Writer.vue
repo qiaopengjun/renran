@@ -130,6 +130,7 @@
           :ishljs="true"
           ref=md
           @change="change_article"
+          @save="save_article"
           @imgAdd="imgAdd"
           @imgDel="imgDel"
         ></mavon-editor>
@@ -195,16 +196,18 @@ export default {
       is_show_article_menu: false, // 控制文章菜单是否显示
       is_interval_window: false, // 控制定时发布窗口是否显示
       pub_date: new Date().toLocaleDateString(),  // 定时发布文章的事件设置
+      timer: null, // 定时器的返回标记
     }
   },
   watch: {
     editorTitle() {
-      this.save_article();
+      this.int_save_article();
+      // this.save_article();
     },
-    editorContent() {
-      console.log(this.editorContent)
-      this.article_list[this.current_article].content = this.editorContent;
-    },
+    // editorContent() {
+    //   console.log(this.editorContent)
+    //   this.article_list[this.current_article].content = this.editorContent;
+    // },
     current_collection() {
       // 切换操作的文集
       this.is_show_collection_menu = false;
@@ -474,9 +477,15 @@ export default {
         this.$message.error("网络异常，编辑的文章内容无法保存，请及时对当前内容进行备份处理并联系客服工作人员！");
       });
     },
+    int_save_article() {
+      // 延时保存文章内容
+      clearTimeout(this.timer); // 每次调用保存时，先把目前运行的定时器关闭，重新进行3秒倒计时
+      this.timer = setTimeout(this.save_article, 3000);
+    },
     change_article(content, html_content) {
       this.editorContent = content;
       this.editorRender = html_content;
+      this.int_save_article();
     },
     // 绑定@imgAdd event
     imgAdd(pos, $file) {
