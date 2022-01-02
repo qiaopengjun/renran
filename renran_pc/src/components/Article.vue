@@ -7,12 +7,16 @@
           <h1 class="_1RuRku">{{ article.title }}</h1>
           <div class="rEsl9f">
             <div class="_2mYfmT">
-              <router-link class="_1OhGeD" to="/user" target="_blank" rel="noopener noreferrer"><img class="_13D2Eh" :src="article.user.avatar" alt=""/>
+              <router-link class="_1OhGeD" to="/user" target="_blank" rel="noopener noreferrer"><img class="_13D2Eh"
+                                                                                                     :src="article.user.avatar"
+                                                                                                     alt=""/>
               </router-link>
               <!--              <a class="_1OhGeD" href="/u/a70487cda447" target="_blank" rel="noopener noreferrer"><img class="_13D2Eh" src="https://upload.jianshu.io/users/upload_avatars/18529254/.png?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96/format/webp" alt=""/></a>-->
               <div style="margin-left: 8px;">
                 <div class="_3U4Smb">
-                  <span class="FxYr8x"><router-link class="_1OhGeD" to="/user">{{ article.user.nickname ? article.user.nickname : article.user.username }}</router-link></span>
+                  <span class="FxYr8x"><router-link class="_1OhGeD" to="/user">{{
+                      article.user.nickname ? article.user.nickname : article.user.username
+                    }}</router-link></span>
                   <!--                  <span class="FxYr8x"><a class="_1OhGeD" href="/u/a70487cda447" target="_blank" rel="noopener noreferrer">書酱</a></span>-->
                   <button data-locale="zh-CN" type="button" class="_3kba3h _1OyPqC _3Mi9q9 _34692-"><span>关注</span>
                   </button>
@@ -152,12 +156,15 @@
             <div class="_191KSt">
               &quot;小礼物走一走，来简书关注我&quot;
             </div>
-            <button type="button" class="_1OyPqC _3Mi9q9 _2WY0RL _1YbC5u" @click="is_show_reward_window=true"><span>赞赏支持</span></button>
-            <span class="_3zdmIj"  v-if="article.reward_count===0">还没有人赞赏，支持一下</span>
-             <span class="_3zdmIj" v-else>共{{article.reward_count}}人赞赏了作者</span>
+            <button type="button" class="_1OyPqC _3Mi9q9 _2WY0RL _1YbC5u" @click="is_show_reward_window=true">
+              <span>赞赏支持</span></button>
+            <span class="_3zdmIj" v-if="article.reward_count===0">还没有人赞赏，支持一下</span>
+            <span class="_3zdmIj" v-else>共{{ article.reward_count }}人赞赏了作者</span>
           </div>
           <div class="d0hShY">
-            <a class="_1OhGeD" href="/u/a70487cda447" target="_blank" rel="noopener noreferrer"><img class="_27NmgV" src="https://upload.jianshu.io/users/upload_avatars/18529254/.png?imageMogr2/auto-orient/strip|imageView2/1/w/100/h/100/format/webp" alt="  "/></a>
+            <a class="_1OhGeD" href="/u/a70487cda447" target="_blank" rel="noopener noreferrer"><img class="_27NmgV"
+                                                                                                     src="https://upload.jianshu.io/users/upload_avatars/18529254/.png?imageMogr2/auto-orient/strip|imageView2/1/w/100/h/100/format/webp"
+                                                                                                     alt="  "/></a>
             <div class="Uz-vZq">
               <div class="Cqpr1X">
                 <a class="HC3FFO _1OhGeD" href="/u/a70487cda447" title="書酱" target="_blank"
@@ -294,6 +301,7 @@ export default {
   },
   data() {
     return {
+      token: "",
       article: {
         collection: {},
         user: {},
@@ -315,8 +323,28 @@ export default {
   },
   methods: {
     payhandler() {
+      this.$message.info("正在打赏处理中。。。请稍后！～");
       // 打赏作者的支付处理
+      if (!this.token) {
+        this.token = this.$settings.check_user_login(this);
+      }
 
+      if (this.token && this.reward_info.pay_type === "支付宝") {
+        // 发起支付
+        this.$axios.post(`${this.$settings.Host}/payments/alipay/`, {
+          money: this.reward_info.money,
+          message: this.reward_info.content,
+          article_id: this.article.id,
+        }, {
+          headers: {
+            Authorization: "jwt " + this.token
+          }
+        }).then(response => {
+          location.href = response.data;
+        }).catch(error => {
+          this.$message.error("网络异常，无法进行打赏！");
+        })
+      }
     },
     get_article() {
       // 获取文章内容信息

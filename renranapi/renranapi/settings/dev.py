@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'oauth',
     'home',
     'article',
+    'payments',
 ]
 
 # CORS组的配置信息
@@ -322,3 +323,17 @@ DEFAULT_FILE_STORAGE = 'renranapi.utils.fastdfs.fdfs_storage.FastDFSStorage'
 # FastDFS
 FDFS_URL = 'http://192.168.182.131:8888/'  # 访问图片的路径域名 ip地址修改为自己机器的ip地址
 FDFS_CLIENT_CONF = os.path.join(BASE_DIR, 'utils/fastdfs/client.conf')
+
+# 支付宝配置
+ALIPAY = {
+    # "gateway_url": "https://openapi.alipay.com/gateway.do?", # 真实支付宝网关地址
+    "gateway_url": "https://openapi.alipaydev.com/gateway.do?",  # 沙箱支付宝网关地址
+    "appid": "2021000118657978",  # 应用ID
+    "app_notify_url": None,  # 支付成功以后的回调地址[这里是全部接口的回调地址，不需要配置]
+    "app_private_key_path": os.path.join(BASE_DIR, "apps/payments/keys/app_private_key.pem"),
+    "alipay_public_key_path": os.path.join(BASE_DIR, "apps/payments/keys/alipay_public_key.pem"),
+    "sign_type": "RSA2",  # 秘钥类型
+    "debug": False,
+    "return_url": "http://www.moluo.net:8080/payments/alipay",  # 同步回调地址
+    "notify_url": "http://api.renran.cn:8000/payments/alipay",  # 异步结果通知
+}
