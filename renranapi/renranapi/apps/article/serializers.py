@@ -104,6 +104,12 @@ class UserModelSerializer(serializers.ModelSerializer):
         fields = ["id", "username", "nickname", "avatar"]
 
 
+# class CollectionModelSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = ArticleCollection
+#         fields = ["id","name"]
+
+
 class ArticleRetrieveModelSerializer(serializers.ModelSerializer):
     user = UserModelSerializer()
     collection = CollectionModelSerializer()

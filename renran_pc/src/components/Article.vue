@@ -319,6 +319,8 @@ export default {
   created() {
     // 获取路由参数
     this.article.id = this.$route.params.id;
+    console.log("this.$route.params.id", this.$route.params.id)
+    console.log("this.article.id", this.article.id)
     this.get_article();
   },
   methods: {
@@ -340,12 +342,33 @@ export default {
             Authorization: "jwt " + this.token
           }
         }).then(response => {
-          location.href = response.data;
-          // open(response.data, "_blank")
+          // location.href=response.data;
+          // this.get_reward_status(response.data.out_trade_no);
+          open(response.data.url, "_blank");
         }).catch(error => {
           this.$message.error("网络异常，无法进行打赏！");
         })
       }
+    },
+    get_reward_status(out_trade_no) {
+      // 查询打赏支付的结果
+      this.is_show_reward_window = false;
+      let timer = setInterval(() => {
+        this.$axios.get(`${this.$settings.Host}/payments/alipay/result/`, {
+          params: {
+            out_trade_no: out_trade_no,
+          }
+        }).then(response => {
+          if (response.data.status) {
+            this.$message.success("支付成功了！");
+            this.article.reward_count += 1;
+            clearInterval(timer);
+          }
+        }).catch(error => {
+          this.$message.error("网络异常，无法查询打赏支付的结果!");
+          clearInterval(timer); // 关闭定时器
+        });
+      }, 5000);
     },
     get_article() {
       // 获取文章内容信息

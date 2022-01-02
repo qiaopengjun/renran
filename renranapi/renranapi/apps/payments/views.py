@@ -112,3 +112,71 @@ class AlipayResultAPIView(APIView):
             return Response({"detail": "支付处理成功！", "article_id": reward.article.id})
 
         return Response({"detail": "支付结果参数有误！"}, status=status.HTTP_400_BAD_REQUEST)
+
+    def get1(self, request):
+        """提供给客户端查询订单支付结果"""
+        out_trade_no = request.query_params.get("out_trade_no")
+        try:
+            reward = Reward.objects.get(out_trade_no=out_trade_no)
+        except Reward.DoesNotExist:
+            return Response({"detail": "当前打赏记录不存在！"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # return Response({"status": reward.status, "article_id": reward.article.id})
+        return Response({"status": reward.status})
+
+    def post(self, request):
+        """异步回调结果的处理"""
+        data = request.data
+        signature = data.pop("sign")
+
+        alipay = self.get_alipay()
+
+        # 验证支付的异步通知结果
+        success = alipay.verify(data, signature)
+        if success and data["trade_status"] in ("TRADE_SUCCESS", "TRADE_FINISHED"):
+            # 完成支付结果的处理
+            # 根据订单号提取订单信息
+            out_trade_no = data.get("out_trade_no")
+            try:
+                reward = Reward.objects.get(out_trade_no=out_trade_no)
+                if reward.status:
+                    return Response("success", content_type="text/plain")
+            except Reward.DoesNotExist:
+                return Response("success", content_type="text/plain")
+
+            self.change_reward(data, reward)
+
+            # 返回结果
+            return Response("success", content_type="text/plain")
+
+        return Response("fail", status=status.HTTP_400_BAD_REQUEST, content_type="text/plain")
+
+    def change_reward(self, data, reward):
+        # 根据订单的付款状态进行修改
+        reward.status = True
+        reward.trade_no = data.get("trade_no")
+        reward.save()
+
+        # 增加文章作者的资金
+        reward.article.user.money += reward.money
+        reward.article.user.save()
+
+        # 增加文章的赞赏人数
+        reward.article.reward_count += 1
+        reward.article.save()
+
+    def get_alipay(self):
+        # 读取秘钥文件的内容
+        app_private_key_string = open(settings.ALIPAY.get("app_private_key_path")).read()
+        alipay_public_key_string = open(settings.ALIPAY.get("alipay_public_key_path")).read()
+        # 根据支付宝sdk生成支付链接
+        alipay = AliPay(
+            appid=settings.ALIPAY.get("appid"),  # appid
+            app_notify_url=settings.ALIPAY.get("app_notify_url"),  # 默认回调url
+            app_private_key_string=app_private_key_string,
+            alipay_public_key_string=alipay_public_key_string,
+            sign_type=settings.ALIPAY.get("sign_type"),
+            debug=settings.ALIPAY.get("debug")
+        )
+
+        return alipay
