@@ -9,6 +9,7 @@ import QQCallBack from "../components/QQCallBack"
 import Writer from "../components/Writer";
 import PostArticle from "../components/PostArticle"
 import Article from "../components/Article";
+import Alipay from "../components/Alipay"
 
 Vue.use(Router)
 
@@ -94,5 +95,10 @@ export default new Router({
        path:"/article/:id",
        component: Article,
      },
+    {
+      path: "/payments/alipay",
+      name: "Alipay",
+      component: Alipay,
+    },
   ]
 })
