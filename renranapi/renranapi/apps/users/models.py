@@ -23,6 +23,7 @@ class User(AbstractUser):
     wechat = models.CharField(max_length=100, null=True, unique=True, verbose_name="微信账号")
     alipay = models.CharField(max_length=100, null=True, unique=True, verbose_name="支付宝账号")
     qq_number = models.CharField(max_length=11, null=True, unique=True, verbose_name="QQ号")
+    money = models.DecimalField(decimal_places=2, max_digits=8, default=0, verbose_name="用户资金")
 
     class Meta:
         # 自定义表名

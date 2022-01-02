@@ -341,6 +341,7 @@ export default {
           }
         }).then(response => {
           location.href = response.data;
+          // open(response.data, "_blank")
         }).catch(error => {
           this.$message.error("网络异常，无法进行打赏！");
         })
