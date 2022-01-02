@@ -343,7 +343,7 @@ export default {
           }
         }).then(response => {
           // location.href=response.data;
-          // this.get_reward_status(response.data.out_trade_no);
+          this.get_reward_status(response.data.out_trade_no);
           open(response.data.url, "_blank");
         }).catch(error => {
           this.$message.error("网络异常，无法进行打赏！");
@@ -368,7 +368,7 @@ export default {
           this.$message.error("网络异常，无法查询打赏支付的结果!");
           clearInterval(timer); // 关闭定时器
         });
-      }, 5000);
+      }, 2000);
     },
     get_article() {
       // 获取文章内容信息

@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'home',
     'article',
     'payments',
+    'store',  # 用于演示tableStore，后续删除掉即可
 ]
 
 # CORS组的配置信息
@@ -337,3 +338,15 @@ ALIPAY = {
     "return_url": "http://www.moluo.net:8080/payments/alipay",  # 同步回调地址
     "notify_url": "http://api.renran.cn:8000/payments/alipay",  # 异步结果通知
 }
+
+# tablestore
+# 应用ID
+OTS_ID = "LTAI5tK52iM391jcoq9QjQLw"
+# 应用密钥
+OTS_SECRET = "VlyEUuhPtHzEV5VGvV2AtLa5ipINA8"
+# 实例名称
+OTS_INSTANCE = "renranpy36"
+# 访问实例的公网地址
+OTS_ENDPOINT = "https://renranpy36.cn-beijing.ots.aliyuncs.com"
+
+

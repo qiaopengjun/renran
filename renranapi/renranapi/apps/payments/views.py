@@ -67,7 +67,7 @@ class AlipayAPIView(APIView):
 class AlipayResultAPIView(APIView):
     """支付结果的处理"""
 
-    def get(self, request):
+    def get1(self, request):
         """同步回调结果的处理"""
         data = request.query_params.dict()  # 把查询字符串转换成字典
         signature = data.pop("sign")
@@ -113,7 +113,7 @@ class AlipayResultAPIView(APIView):
 
         return Response({"detail": "支付结果参数有误！"}, status=status.HTTP_400_BAD_REQUEST)
 
-    def get1(self, request):
+    def get(self, request):
         """提供给客户端查询订单支付结果"""
         out_trade_no = request.query_params.get("out_trade_no")
         try:
