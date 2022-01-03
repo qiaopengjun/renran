@@ -3,4 +3,5 @@ from . import views
 
 urlpatterns = [
     path("table/", views.TableAPIView.as_view()),
+    path("data/", views.DataAPIView.as_view()),
 ]
