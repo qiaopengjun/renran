@@ -7,19 +7,16 @@
           <h1 class="_1RuRku">{{ article.title }}</h1>
           <div class="rEsl9f">
             <div class="_2mYfmT">
-              <router-link class="_1OhGeD" to="/user" target="_blank" rel="noopener noreferrer"><img class="_13D2Eh"
-                                                                                                     :src="article.user.avatar"
-                                                                                                     alt=""/>
-              </router-link>
+              <router-link class="_1OhGeD" to="/user" target="_blank" rel="noopener noreferrer"><img class="_13D2Eh" :src="article.user.avatar" alt=""/></router-link>
               <!--              <a class="_1OhGeD" href="/u/a70487cda447" target="_blank" rel="noopener noreferrer"><img class="_13D2Eh" src="https://upload.jianshu.io/users/upload_avatars/18529254/.png?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96/format/webp" alt=""/></a>-->
               <div style="margin-left: 8px;">
                 <div class="_3U4Smb">
-                  <span class="FxYr8x"><router-link class="_1OhGeD" to="/user">{{
-                      article.user.nickname ? article.user.nickname : article.user.username
-                    }}</router-link></span>
+                  <span class="FxYr8x"><router-link class="_1OhGeD" to="/user">{{ article.user.nickname ? article.user.nickname : article.user.username }}</router-link></span>
                   <!--                  <span class="FxYr8x"><a class="_1OhGeD" href="/u/a70487cda447" target="_blank" rel="noopener noreferrer">書酱</a></span>-->
-                  <button data-locale="zh-CN" type="button" class="_3kba3h _1OyPqC _3Mi9q9 _34692-"><span>关注</span>
-                  </button>
+                  <!--                  <button data-locale="zh-CN" type="button" class="_3kba3h _1OyPqC _3Mi9q9 _34692-"><span>关注</span></button>-->
+                  <button data-locale="zh-CN" type="button" class="_3kba3h _1OyPqC _3Mi9q9 _34692-" v-if="focus_status===1"><span>已关注</span></button>
+                  <button data-locale="zh-CN" type="button" class="_3kba3h _1OyPqC _3Mi9q9 _34692-" v-if="focus_status===0"><span>关注</span></button>
+                  <button data-locale="zh-CN" type="button" class="_3kba3h _1OyPqC _3Mi9q9 _34692-" v-if="focus_status===-2"><span>关注</span></button>
                 </div>
                 <div class="s-dsoj">
                   <time :datetime="format(article.created_time)">{{ format(article.created_time) }}</time>
@@ -313,7 +310,8 @@ export default {
         money: 2,
         content: "",
         pay_type: "支付宝",
-      }
+      },
+      focus_status: -2, // 当前用户是否关注作者的状态，-2表示没登录,-1表示用户与作者是同一个人，0表示没有关注，1表示已关注
     }
   },
   created() {
@@ -374,9 +372,33 @@ export default {
       // 获取文章内容信息
       this.$axios.get(`${this.$settings.Host}/article/${this.article.id}/retrieve/`).then(response => {
         this.article = response.data;
+        // 查询当前访问用户与作者的关系
+        this.get_focus_status();
       }).catch(error => {
         this.$message.error("网络异常，获取文章信息失败！");
       })
+    },
+    get_focus_status() {
+      // 查询用户是否关注了作者
+      if (!this.token) {
+        this.token = this.$settings.check_user_login(this);
+      }
+      if (this.token === false) {
+        // 如果token不存在，则表示没有登录
+        return;
+      }
+      this.$axios.get(`${this.$settings.Host}/article/focus/`, {
+        params: {
+          author_id: this.article.user.id
+        },
+        headers: {
+          Authorization: "jwt " + this.token
+        }
+      }).then(response => {
+        this.focus_status = response.data.status;
+      }).catch(error => {
+        this.$message.error(error.response.data.detail);
+      });
     },
     format(time) {
       time = new Date(time);
