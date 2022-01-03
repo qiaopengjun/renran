@@ -387,12 +387,19 @@ class OTS(object):
         """
         # 设置范围查询的起始主键。
         inclusive_start_primary_key = []
-        for key, value in start_key.items():
-            inclusive_start_primary_key.append((key, value))
+        if type(start_key) is dict:
+            for key, value in start_key.items():
+                inclusive_start_primary_key.append((key, value))
+        else:
+            inclusive_start_primary_key = start_key
+
         # 设置范围查询的结束主键。
         exclusive_end_primary_key = []
-        for key, value in end_key.items():
-            exclusive_end_primary_key.append((key, value))
+        if type(end_key) is dict:
+            for key, value in end_key.items():
+                exclusive_end_primary_key.append((key, value))
+        else:
+            exclusive_end_primary_key = end_key
 
         try:
             # 读取数据

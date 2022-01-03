@@ -11,6 +11,7 @@ from rest_framework import status
 from users.models import User
 from renranapi.utils.tablestore import OTS
 from renranapi.settings import constants
+from renranapi.utils.tablestore import *
 
 
 # Create your views here.
@@ -86,6 +87,8 @@ class ArticleAPIView(ListAPIView, CreateAPIView):
         else:
             """发布文章"""
             article.is_public = True
+            # 推送feed流给粉丝
+            self.push_feed(article)
 
         # article.is_public = not article.is_public
         article.save()
@@ -101,6 +104,31 @@ class ArticleAPIView(ListAPIView, CreateAPIView):
         article.collection_id = collection_id
         article.save()
         return Response({"detail": "移动文章成功!"})
+
+    @staticmethod
+    def push_feed(article):
+        """推送feed流"""
+        flowers_list = ArticleAPIView.get_author_flowers(article.user.id)
+        # 把推送数据填写到同步库中
+
+    @staticmethod
+    def get_author_flowers(author_id):
+        """获取当前作者的所有粉丝"""
+        start_key = {"id": 1, "user_id": author_id, "follow_user_id": INF_MIN}  # 查询开始的主键列
+        end_key = {"id": 1, "user_id": author_id, "follow_user_id": INF_MAX}  # 查询结束的主键列
+        data = []
+        # 获取粉丝数据，默认一次最多只能获取90
+        ret = OTS().get_list("user_relation_table", start_key, end_key)
+        if ret["status"]:
+            data.extend(ret["data"])
+            while ret["token"]:  # 当数据超过90条时，token表示下一次查询的开始主键列
+                start_key = ret["token"]
+                ret = OTS().get_list("user_relation_table", start_key, end_key)
+                data.extend(ret["data"])
+
+        flowers_list = [item["follow_user_id"] for item in data]
+        print(f"flowers_list=={flowers_list}")
+        return flowers_list
 
 
 class ArticleInfoAPIView(APIView):
