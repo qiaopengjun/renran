@@ -12,3 +12,5 @@ HOME_BANNER_LENGTH = 10
 HEADER_NAV_LENGTH = 8
 # 脚部顶级导航数量
 FOOTER_NAV_LENGTH = 8
+# Feed流系统的分区键
+RELATION_TABLE_ID = 1   # 关系表的分区键

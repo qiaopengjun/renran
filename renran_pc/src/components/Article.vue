@@ -368,7 +368,7 @@ export default {
           this.$message.error("网络异常，无法查询打赏支付的结果!");
           clearInterval(timer); // 关闭定时器
         });
-      }, 2000);
+      }, 5000);
     },
     get_article() {
       // 获取文章内容信息

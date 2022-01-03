@@ -8,6 +8,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.utils import timezone as datetime
 from rest_framework import status
+from users.models import User
+from renranapi.utils.tablestore import OTS
+from renranapi.settings import constants
 
 
 # Create your views here.
@@ -216,3 +219,23 @@ class ArticleRetrieveAPIView(RetrieveAPIView):
     """文章详情"""
     queryset = Article.objects.filter(is_deleted=False, is_show=True, is_public=True)
     serializer_class = ArticleRetrieveModelSerializer
+
+
+class FocusAPIView(APIView):
+    """在文章详情页中判断当前用户是否关注了文章作者"""
+    def get(self, request):
+        if not isinstance(request.user, User):
+            return Response({"status": -2, "detail": "当前用户尚未登录！无法查询关注关系"})
+
+        try:
+            author_id = int(request.query_params.get("author_id"))
+            User.objects.get(pk=author_id)
+        except User.DoesNotExist:
+            return Response({"detail": "参数有误，当前作者不存在！"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if author_id == request.user.id:
+            return Response({"status": -1, "detail": "当前用户是作者!"})
+
+        ret = OTS().get_row("user_relation_table", {"id": constants.RELATION_TABLE_ID, "user_id": author_id,
+                                                    "follow_user_id": request.user.id})
+        return Response({"status": int(ret[0])})
