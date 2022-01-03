@@ -14,3 +14,4 @@ HEADER_NAV_LENGTH = 8
 FOOTER_NAV_LENGTH = 8
 # Feed流系统的分区键
 RELATION_TABLE_ID = 1   # 关系表的分区键
+MESSAGE_TABLE_ID = 1   # 同步库的分区键

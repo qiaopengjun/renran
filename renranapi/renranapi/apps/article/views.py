@@ -84,6 +84,8 @@ class ArticleAPIView(ListAPIView, CreateAPIView):
         elif article.is_public:
             """把文章设置为隐私文章"""
             article.is_public = False
+            # 取消推送Feed流
+            self.cancel_push_feed(article)
         else:
             """发布文章"""
             article.is_public = True
@@ -108,8 +110,28 @@ class ArticleAPIView(ListAPIView, CreateAPIView):
     @staticmethod
     def push_feed(article):
         """推送feed流"""
+        # 获取当前作者的粉丝列表
         flowers_list = ArticleAPIView.get_author_flowers(article.user.id)
+        if len(flowers_list) < 1:
+            return False
+
         # 把推送数据填写到同步库中
+        primary_key_list = [{
+            "id": constants.MESSAGE_TABLE_ID,
+            "user_id": flower,  # 粉丝ID
+            "sequence_id": PK_AUTO_INCR,
+            "message_id": article.id
+        } for flower in flowers_list]
+
+        # 增加属性
+        attribute_columns_list = [{
+            "timestamp": datetime.now().timestamp(),  # 推送时间
+            "is_read": False,  # 是否阅读
+            "is_cancel": False,  # 是否取消推送
+        } for flower in flowers_list]
+
+        ret = OTS().add_list("user_message_table", primary_key_list, attribute_columns_list)
+        print(f"ret{ret}")
 
     @staticmethod
     def get_author_flowers(author_id):
@@ -129,6 +151,46 @@ class ArticleAPIView(ListAPIView, CreateAPIView):
         flowers_list = [item["follow_user_id"] for item in data]
         print(f"flowers_list=={flowers_list}")
         return flowers_list
+
+    @staticmethod
+    def cancel_push_feed(article):
+        # 取消推送记录
+        # 把推送数据填写到同步库中
+        primary_key_list = ArticleAPIView.get_feed_list(article)  # 查询当前文章的所有推送记录
+        print(primary_key_list)
+        if len(primary_key_list) < 1:
+            return False
+
+        attribute_columns_list = [{"is_cancel": True} for i in primary_key_list]
+        OTS().update_list("user_message_table", primary_key_list, attribute_columns_list)
+
+    @staticmethod
+    def get_feed_list(article):
+        """获取指定文章的推送记录"""
+        start_key = {
+            "id": constants.MESSAGE_TABLE_ID,
+            "user_id": INF_MIN,
+            "sequence_id": INF_MIN,
+            "message_id": article.id
+        }
+        end_key = {
+            "id": constants.MESSAGE_TABLE_ID,
+            "user_id": INF_MAX,
+            "sequence_id": INF_MAX,
+            "message_id": article.id
+        }
+        # 获取文章推送记录，默认一次最多只能获取90
+        ret = OTS().get_list("user_message_table", start_key, end_key)
+
+        data = []
+        if ret["status"]:
+            data.extend(ret["data"])
+            while ret["token"]:  # 当数据超过90条时，token表示下一次查询的开始主键列
+                start_key = ret["token"]
+                ret = OTS().get_list("user_message_table", start_key, end_key)
+                data.extend(ret["data"])
+
+        return data
 
 
 class ArticleInfoAPIView(APIView):

@@ -12,4 +12,5 @@ def interval_pub_article():
         article.is_public = True
         article.pub_date = None
         article.save()
+        # todo 推送feed流
         print("文章《%s》发布成功" % article.title)
