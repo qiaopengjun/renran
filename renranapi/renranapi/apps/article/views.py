@@ -223,6 +223,7 @@ class ArticleRetrieveAPIView(RetrieveAPIView):
 
 class FocusAPIView(APIView):
     """在文章详情页中判断当前用户是否关注了文章作者"""
+
     def get(self, request):
         if not isinstance(request.user, User):
             return Response({"status": -2, "detail": "当前用户尚未登录！无法查询关注关系"})
@@ -239,3 +240,33 @@ class FocusAPIView(APIView):
         ret = OTS().get_row("user_relation_table", {"id": constants.RELATION_TABLE_ID, "user_id": author_id,
                                                     "follow_user_id": request.user.id})
         return Response({"status": int(ret[0])})
+
+    def put(self, request):
+        """切换关注关系"""
+        if not isinstance(request.user, User):
+            return Response({"detail": "用户尚未登录，无法操作"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            author_id = int(request.data.get("author_id"))
+            User.objects.get(pk=author_id)
+        except User.DoesNotExist:
+            return Response({"detail": "参数有误，当前作者不存在！"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if author_id == request.user.id:
+            return Response({"detail": "当前用户是作者!"}, status=status.HTTP_400_BAD_REQUEST)
+
+        focus_status = bool(int(request.data.get("status")))
+
+        client = OTS()
+        primary_key = {"id": constants.RELATION_TABLE_ID, "user_id": author_id, "follow_user_id": request.user.id}
+        if focus_status:
+            message = "取消关注"
+            ret = client.delete_row("user_relation_table", primary_key)
+        else:
+            message = "关注"
+            ret = client.put_row("user_relation_table", primary_key)
+
+        if ret[0] is False:
+            return Response({"detail": "%s失败！" % message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({"detail": "%s成功！" % message})
