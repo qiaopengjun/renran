@@ -1,6 +1,7 @@
 from mycelery.main import app
 from article.models import Article
 from django.utils import timezone as datetime
+from article.views import ArticleAPIView
 
 
 @app.task(name="interval_pub_article")
@@ -12,5 +13,6 @@ def interval_pub_article():
         article.is_public = True
         article.pub_date = None
         article.save()
-        # todo 推送feed流
+        # 推送feed流
+        ArticleAPIView.push_feed(article)
         print("文章《%s》发布成功" % article.title)

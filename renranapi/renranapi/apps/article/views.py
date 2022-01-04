@@ -63,7 +63,6 @@ class ArticleAPIView(ListAPIView, CreateAPIView):
         # /article/collection/<collection>\d/articles/
         # 获取路由参数的另一种方式 self.kwargs.get("参数名称")
         collection_id = self.kwargs.get("collection")
-        print(collection_id)
         return Article.objects.filter(is_deleted=False, is_show=True, user=self.request.user,
                                       collection_id=collection_id).order_by("orders", "id")
 
@@ -72,12 +71,11 @@ class ArticleAPIView(ListAPIView, CreateAPIView):
             article = Article.objects.get(pk=pk, is_deleted=False, is_show=True, user=self.request.user)
         except Article.DoesNotExist:
             return Response({"detail": "当前文章不存在!"}, status=status.HTTP_400_BAD_REQUEST)
-
         """
-              1. 隐私文章 is_public=False, pub_date=None
-              2. 发布文章 is_public=True, pub_date=None
-              3. 定时文章 is_public=False, pub_date=时间
-              """
+        1. 隐私文章 is_public=False, pub_date=None
+        2. 发布文章 is_public=True, pub_date=None
+        3. 定时文章 is_public=False, pub_date=时间
+        """
         if article.pub_date:
             """取消定时发布文章"""
             article.pub_date = None
@@ -85,14 +83,14 @@ class ArticleAPIView(ListAPIView, CreateAPIView):
             """把文章设置为隐私文章"""
             article.is_public = False
             # 取消推送Feed流
+            # article.cancel_push_feed()
             self.cancel_push_feed(article)
         else:
             """发布文章"""
             article.is_public = True
             # 推送feed流给粉丝
+            # article.push_feed()
             self.push_feed(article)
-
-        # article.is_public = not article.is_public
         article.save()
         return Response({"detail": "发布状态切换成功!"})
 
@@ -209,7 +207,7 @@ class ArticleInfoAPIView(APIView):
         # 判断定时发布的时候是否是未来时间
         now_time = datetime.now().timestamp()
         pub_time_str = request.data.get("pub_date")
-        put_time = datetime.datetime.strptime(pub_time_str, "%Y-%m-%d %H:%M").timestamp()
+        put_time = datetime.datetime.strptime(pub_time_str, "%Y-%m-%d %H:%M:%S").timestamp()
         if put_time <= now_time:
             return Response({"detail": "定时发布的文章必须是未来的时间点!"}, status=status.HTTP_400_BAD_REQUEST)
 

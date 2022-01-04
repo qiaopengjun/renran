@@ -2,6 +2,9 @@ from django.db import models
 from renranapi.utils.models import BaseModel
 from users.models import User
 from django.utils.safestring import mark_safe
+from renranapi.utils.tablestore import *
+from django.utils import timezone as datetime
+from renranapi.settings import constants
 
 
 # Create your models here.
@@ -23,9 +26,10 @@ class Article(BaseModel):
     title = models.CharField(max_length=150, db_index=True, verbose_name="文章")
     content = models.TextField(null=True, blank=True, verbose_name="文章内容")
     html_content = models.TextField(null=True, blank=True, verbose_name="文章内容[html格式]")
-    user = models.ForeignKey(User,related_name="myarticles", on_delete=models.DO_NOTHING, verbose_name="作者")
-    collection = models.ForeignKey(ArticleCollection, related_name="article_list", on_delete=models.CASCADE, verbose_name="文集")
-    pub_date = models.DateTimeField(null=True,blank=True, default=None, verbose_name="发布时间")
+    user = models.ForeignKey(User, related_name="myarticles", on_delete=models.DO_NOTHING, verbose_name="作者")
+    collection = models.ForeignKey(ArticleCollection, related_name="article_list", on_delete=models.CASCADE,
+                                   verbose_name="文集")
+    pub_date = models.DateTimeField(null=True, blank=True, default=None, verbose_name="发布时间")
     access_pwd = models.CharField(max_length=15, null=True, blank=True, verbose_name="访问密码")
     read_count = models.IntegerField(default=0, null=True, blank=True, verbose_name="阅读量")
     like_count = models.IntegerField(default=0, null=True, blank=True, verbose_name="点赞量")
@@ -41,6 +45,86 @@ class Article(BaseModel):
 
     def __str__(self):
         return self.title
+
+    # def push_feed(self):
+    #     """推送feed流"""
+    #     # 获取当前作者的粉丝列表
+    #     flowers_list = self.get_author_flowers(self.user.id)
+    #     if len(flowers_list) < 1:
+    #         return False
+    #
+    #     # 把推送数据填写到同步库中
+    #     primary_key_list = [{
+    #         "id": constants.MESSAGE_TABLE_ID,
+    #         "user_id": flower,
+    #         "sequence_id": PK_AUTO_INCR,
+    #         "message_id": self.id
+    #     } for flower in flowers_list]
+    #
+    #     attribute_columns_list = [{
+    #         "timestamp": datetime.now().timestamp(),  # 推送时间
+    #         "is_read": False,  # 是否阅读
+    #         "is_cancel": False,  # 是否取消推送
+    #     } for flower in flowers_list]
+    #
+    #     ret = OTS().add_list("user_message_table", primary_key_list, attribute_columns_list)
+    #
+    # def get_author_flowers(self, author_id):
+    #     """获取当前作者的所有粉丝"""
+    #     start_key = {"id": 1, "user_id": author_id, "follow_user_id": INF_MIN}  # 查询开始的主键列
+    #     end_key = {"id": 1, "user_id": author_id, "follow_user_id": INF_MAX}  # 查询结束的主键列
+    #
+    #     # 获取粉丝数据，默认一次最多只能获取90
+    #     ret = OTS().get_list("user_relation_table", start_key, end_key)
+    #     data = []
+    #     if ret["status"]:
+    #         data.extend(ret["data"])
+    #         while ret["token"]:  # 当数据超过90条时，token表示下一次查询的开始主键列
+    #             start_key = ret["token"]
+    #             ret = OTS().get_list("user_relation_table", start_key, end_key)
+    #             data.extend(ret["data"])
+    #
+    #     flowers_list = [item["follow_user_id"] for item in data]
+    #     return flowers_list
+    #
+    # def cancel_push_feed(self):
+    #     # 取消推送记录
+    #     # 把推送数据填写到同步库中
+    #     primary_key_list = self.get_feed_list()  # 查询当前文章的所有推送记录
+    #     print("取消文章%d的feed推送" % self.id)
+    #     print(primary_key_list)
+    #     if len(primary_key_list) < 1:
+    #         return False
+    #
+    #     attribute_columns_list = [{"is_cancel": True} for i in primary_key_list]
+    #     OTS().update_list("user_message_table", primary_key_list, attribute_columns_list)
+    #
+    # def get_feed_list(self):
+    #     """获取指定文章的推送记录"""
+    #     start_key = {
+    #         "id": constants.MESSAGE_TABLE_ID,
+    #         "user_id": INF_MIN,
+    #         "sequence_id": INF_MIN,
+    #         "message_id": self.id
+    #     }
+    #     end_key = {
+    #         "id": constants.MESSAGE_TABLE_ID,
+    #         "user_id": INF_MAX,
+    #         "sequence_id": INF_MAX,
+    #         "message_id": self.id
+    #     }
+    #     # 获取文章推送记录，默认一次最多只能获取90
+    #     ret = OTS().get_list("user_message_table", start_key, end_key)
+    #     print(ret)
+    #     data = []
+    #     if ret["status"]:
+    #         data.extend(ret["data"])
+    #         while ret["token"]:  # 当数据超过90条时，token表示下一次查询的开始主键列
+    #             start_key = ret["token"]
+    #             ret = OTS().get_list("user_message_table", start_key, end_key)
+    #             data.extend(ret["data"])
+    #
+    #     return data
 
 
 class ArticleSpecial(BaseModel):
