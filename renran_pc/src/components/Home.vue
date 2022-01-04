@@ -8,7 +8,7 @@
           <div class="banner">
             <el-carousel height="272px" indicator-position="none" :interval="2000">
               <el-carousel-item v-for="(item,key) in banner_list" :key="key">
-<!--                <h3 class="small">{{ item }}</h3>-->
+                <!--                <h3 class="small">{{ item }}</h3>-->
                 <a :href="item.link" v-if="item.is_http"><img :src="item.image" alt=""></a>
                 <router-link :to="item.link" v-else><img :src="item.image" alt=""></router-link>
               </el-carousel-item>
@@ -17,48 +17,58 @@
           <div id="list-container">
             <!-- 文章列表模块 -->
             <ul class="note-list">
-              <li class="">
+              <li class="" v-for="article in article_list">
                 <div class="content">
-                  <a class="title" target="_blank" href="">常做此运动，让你性福加倍</a>
-                  <p class="abstract">运动，是人类在发展过程中有意识地对自己身体素质的培养的各种活动 运动的方式多种多样 不仅仅是我们常知的跑步，球类，游泳等 今天就为大家介绍一种男...</p>
+                  <router-link class="title" :to="`/article/${article.id}`">{{ article.title }}</router-link>
+                  <!--                  <a class="title" target="_blank" href="">常做此运动，让你性福加倍</a>-->
+                  <p class="abstract">{{ article.html_content|format }}</p>
                   <div class="meta">
-                    <span class="jsd-meta">
-                      <img src="/static/image/paid1.svg" alt=""> 4.8
-                    </span>
-                    <a class="nickname" target="_blank" href="">上班族也健身</a>
-                    <a target="_blank" href="">
-                      <img src="/static/image/comment.svg" alt=""> 4
-                    </a>
-                    <span><img src="/static/image/like.svg" alt=""> 31</span>
+                    <router-link class="nickname" :to="`/user/${article.user.id}`">
+                      {{ article.user.nickname ? article.user.nickname : article.user.username }}
+                    </router-link>
+                    <router-link :to="`/article/${article.id}#comment`">
+                      <img src="/static/image/comment.svg" alt=""> {{ article.comment_count }}
+                    </router-link>
+                    <span v-if="article.like_count>0"><img src="/static/image/like.svg" alt=""> {{ article.like_count }}</span>
+                    <span v-if="article.reward_count>0"><img src="/static/image/shang.svg"
+                                                             alt=""> {{ article.reward_count }}</span>
+                    <!--                    <span class="jsd-meta">-->
+                    <!--                      <img src="/static/image/paid1.svg" alt=""> 4.8-->
+                    <!--                    </span>-->
+                    <!--                    <a class="nickname" target="_blank" href="">上班族也健身</a>-->
+                    <!--                    <a target="_blank" href="">-->
+                    <!--                      <img src="/static/image/comment.svg" alt=""> 4-->
+                    <!--                    </a>-->
+                    <!--                    <span><img src="/static/image/like.svg" alt=""> 31</span>-->
                   </div>
                 </div>
               </li>
-              <li class="have-img">
-                <a class="wrap-img" href="" target="_blank">
-                  <img class="img-blur-done" src="/static/image/10907624-107943365323e5b9.jpeg"/>
-                </a>
-                <div class="content">
-                  <a class="title" target="_blank" href="">“不耻下问”，正在毁掉你的人生</a>
-                  <p class="abstract">
-                    在过去，遇到不懂的问题，你不耻下问，找个人问问就行；在现在，如果你还这么干，多半会被认为是“搜商低”。 昨天，35岁的表姐把我拉黑了。 表姐是医...
-                  </p>
-                  <div class="meta">
-                    <span class="jsd-meta">
-                      <img src="/static/image/paid1.svg" alt=""> 6.7
-                    </span>
-                    <a class="nickname" target="_blank" href="">_飞鱼</a>
-                    <a target="_blank" href="">
-                      <img src="/static/image/comment.svg" alt=""> 33
-                    </a>
-                    <span><img src="/static/image/like.svg" alt=""> 113</span>
-                    <span><img src="/static/image/shang.svg" alt=""> 2</span>
-                  </div>
-                </div>
-              </li>
+              <!--              <li class="have-img">-->
+              <!--                <a class="wrap-img" href="" target="_blank">-->
+              <!--                  <img class="img-blur-done" src="/static/image/10907624-107943365323e5b9.jpeg"/>-->
+              <!--                </a>-->
+              <!--                <div class="content">-->
+              <!--                  <a class="title" target="_blank" href="">“不耻下问”，正在毁掉你的人生</a>-->
+              <!--                  <p class="abstract">-->
+              <!--                    在过去，遇到不懂的问题，你不耻下问，找个人问问就行；在现在，如果你还这么干，多半会被认为是“搜商低”。 昨天，35岁的表姐把我拉黑了。 表姐是医...-->
+              <!--                  </p>-->
+              <!--                  <div class="meta">-->
+              <!--                    <span class="jsd-meta">-->
+              <!--                      <img src="/static/image/paid1.svg" alt=""> 6.7-->
+              <!--                    </span>-->
+              <!--                    <a class="nickname" target="_blank" href="">_飞鱼</a>-->
+              <!--                    <a target="_blank" href="">-->
+              <!--                      <img src="/static/image/comment.svg" alt=""> 33-->
+              <!--                    </a>-->
+              <!--                    <span><img src="/static/image/like.svg" alt=""> 113</span>-->
+              <!--                    <span><img src="/static/image/shang.svg" alt=""> 2</span>-->
+              <!--                  </div>-->
+              <!--                </div>-->
+              <!--              </li>-->
             </ul>
             <!-- 文章列表模块 -->
           </div>
-          <a href="" class="load-more">阅读更多</a></div>
+          <a href="" class="load-more" v-if="next_page" @click.prevent.stop="get_article">阅读更多</a></div>
         <div class="aside">
           <!-- 推荐作者 -->
           <div class="recommended-author-wrap">
@@ -106,10 +116,34 @@ export default {
   data() {
     return {
       banner_list: [],
+      next_page: null, // 控制显示下一页按钮
+      is_send_ajax: false, // 锁，用于实现ajax节流
+      article_list: [],
     }
   },
   created() {
     this.get_banner()
+    // 初始化文章列表的url地址
+    this.next_page = `${this.$settings.Host}/push/article/?size=3`;
+    this.get_article()
+  },
+  filters: {
+    format(content) {
+      if (content == null) {
+        return ""
+      }
+      content = String(content);
+      let content2 = ""
+      while (true) {
+        content2 = content.replace(/<.*?>/, "")
+        if (content2 === content) {
+          break
+        } else {
+          content = content2
+        }
+      }
+      return content
+    }
   },
   methods: {
     get_banner() {
@@ -119,6 +153,25 @@ export default {
           this.$message.error("网络异常，无法获取轮播图内容！")
         }
       )
+    },
+    get_article() {
+      // 获取文章列表
+      if (this.is_send_ajax) { // 判断锁的状态
+        return;
+      }
+      // 上锁
+      this.is_send_ajax = true;
+      this.$axios.get(this.next_page).then(response => {
+        this.article_list = this.article_list.concat(response.data.results);
+        this.next_page = response.data.next;
+        // 解锁
+        this.is_send_ajax = false;
+        // this.$axios.get(`${this.$settings.Host}/push/article/`).then(response => {
+        //   this.article_list = response.data.results;
+        //   console.log(response.data)
+      }).catch(error => {
+        this.$message.error("网络异常,无法获取文章列表内容!");
+      });
     }
   },
   components: {
