@@ -78,6 +78,17 @@ class Command(BaseCommand):
         self.client.create_table(table_name, schema_of_primary_key)
         self.stdout.write("表格《%s》创建完成..." % table_name)
 
+        # 推送日志
+        table_name = "user_message_log_table"
+        schema_of_primary_key = [  # 主键列
+            ('id', 'INTEGER'),
+            ('user_id', 'INTEGER'),
+            ("message_id", 'INTEGER'),
+        ]
+
+        self.client.create_table(table_name, schema_of_primary_key)
+        self.stdout.write("表格《%s》创建完成..." % table_name)
+
     def delete_table(self):
         """删除表操作"""
         table_list = OTS().list_table()

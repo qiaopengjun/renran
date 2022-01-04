@@ -153,7 +153,16 @@ export default {
       }
       // 上锁
       this.is_send_ajax = true;
-      this.$axios.get(this.next_page).then(response => {
+      this.token = sessionStorage.user_token || localStorage.user_token;
+      let headers = {}
+      if (this.token) {
+        headers = {
+          Authorization: "jwt " + this.token,
+        }
+      }
+      this.$axios.get(this.next_page, {
+        headers: headers,
+      }).then(response => {
         this.article_list = this.article_list.concat(response.data.results);
         this.next_page = response.data.next;
         // 解锁

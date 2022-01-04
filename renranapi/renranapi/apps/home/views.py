@@ -6,6 +6,9 @@ from renranapi.settings import constants
 from django.utils import timezone as datetime
 from article.models import Article
 from .paginations import HomeArticlePageNumberPagination
+from .serializers import ArticleModelSerializer
+from users.models import User
+from renranapi.utils.tablestore import *
 
 """
 注意：开发中绝对不能把当前时间now写在视图方法外面或者作为类属性的值,
@@ -49,7 +52,44 @@ class FooterNavListAPIView(ListAPIView):
 
 class ArticleListAPIView(ListAPIView):
     serializer_class = ArticleModelSerializer
-    queryset = Article.objects.filter(is_public=True, is_show=True, is_deleted=False).order_by("-reward_count",
-                                                                                               "-comment_count",
-                                                                                               "-like_count", "-id")
     pagination_class = HomeArticlePageNumberPagination
+    # queryset = Article.objects.filter(is_public=True, is_show=True, is_deleted=False).order_by("-reward_count", "-comment_count", "-like_count", "-id")
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if isinstance(self.request.user, User):
+            """登录"""
+            start_key = {"id": constants.MESSAGE_TABLE_ID, "user_id": user.id, "sequence_id": INF_MIN,
+                         "message_id": INF_MIN}
+            end_key = {"id": constants.MESSAGE_TABLE_ID, "user_id": user.id, "sequence_id": INF_MAX,
+                       "message_id": INF_MAX}
+            cond = SingleColumnCondition("is_cancel", False, ComparatorType.EQUAL)
+            message_list = []
+            # 接受客户端执行返回的单页数据量，如果客户端没有指定，则默认采用分页器的单页数据量
+            size = int(self.request.query_params.get("size")) or self.pagination_class.page_size
+            ret = OTS().get_list("user_message_table", start_key, end_key, limit=size, cond=cond)
+            if ret:
+                for item in ret["data"]:
+                    message_list.append(item["message_id"])
+                while ret["token"]:
+                    # print(ret["token"]) # [('id', 1), ('user_id', 2), ('sequence_id', 1596081490522997), ('message_id', 23)]
+                    start_key = ret["token"]
+                    end_key = {"id": constants.MESSAGE_TABLE_ID, "user_id": user.id, "sequence_id": INF_MAX,
+                               "message_id": INF_MAX}
+                    cond = SingleColumnCondition("is_cancel", False, ComparatorType.EQUAL)
+                    ret = OTS().get_list("user_message_table", start_key, end_key, limit=size, cond=cond)
+                    for item in ret["data"]:
+                        message_list.append(item["message_id"])
+
+            print(f"message_list{message_list}")
+            queryset = Article.objects.filter(is_public=True, is_show=True, is_deleted=False,
+                                              pk__in=message_list).order_by("-id")
+            print(f"queryset{queryset}")
+        else:
+            queryset = Article.objects.filter(is_public=True, is_show=True, is_deleted=False).order_by("-reward_count",
+                                                                                                       "-comment_count",
+                                                                                                       "-like_count",
+                                                                                                       "-id")
+        print(f"queryset1 {queryset}")
+        return queryset

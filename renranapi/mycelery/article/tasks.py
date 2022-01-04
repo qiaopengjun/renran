@@ -14,5 +14,6 @@ def interval_pub_article():
         article.pub_date = None
         article.save()
         # 推送feed流
-        ArticleAPIView.push_feed(article)
+        article.push_feed()
+        # ArticleAPIView.push_feed(article)
         print("文章《%s》发布成功" % article.title)
