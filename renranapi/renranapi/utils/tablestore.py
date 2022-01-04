@@ -130,25 +130,28 @@ class OTS(object):
             # 调用get_row接口查询
             consumed, return_row, next_token = self.client.get_row(table_name, primary_key_list, columns_to_get,
                                                                    column_filter, 1)
+            print(return_row)
             data = {}
-            for att in return_row.primary_key:
-                # 打印每一个字段的内容
-                data[att[0]] = att[1]
-            if len(columns_to_get) > 0:
-                """如果有指定要返回其他属性列"""
-                for att in return_row.attribute_columns:
+            if return_row is not None:
+                for att in return_row.primary_key:
                     # 打印每一个字段的内容
                     data[att[0]] = att[1]
+                if len(columns_to_get) > 0:
+                    """如果有指定要返回其他属性列"""
+                    for att in return_row.attribute_columns:
+                        # 打印每一个字段的内容
+                        data[att[0]] = att[1]
             return True, data
             # 客户端异常，一般为参数错误或者网络异常。
         except OTSClientError as e:
-            return False, "获取数据失败, http_status:%d, error_message:%s" % (e.get_http_status(), e.get_error_message())
+            return False, "网络异常，获取数据失败, http_status:%d, error_message:%s" % (e.get_http_status(), e.get_error_message())
         # 服务端异常，一般为参数错误或者流控错误。
         except OTSServiceError as e:
-            return False, "获取数据失败, http_status:%d, error_code:%s, error_message:%s, request_id:%s" % (
+            return False, "参数有误，获取数据失败, http_status:%d, error_code:%s, error_message:%s, request_id:%s" % (
                 e.get_http_status(), e.get_error_code(), e.get_error_message(), e.get_request_id())
         except Exception as e:
-            return False, "未知异常"
+            return False, "未知异常, http_status:%d, error_code:%s, error_message:%s, request_id:%s" % (
+                e.get_http_status(), e.get_error_code(), e.get_error_message(), e.get_request_id())
 
     def update_row(self, table_name, primary_key, attribute_columns):
         """更新一条数据"""

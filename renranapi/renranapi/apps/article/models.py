@@ -96,7 +96,8 @@ class Article(BaseModel):
         if len(primary_key_list) < 1:
             return False
 
-        attribute_columns_list = [{"is_cancel": True} for i in primary_key_list]
+        # attribute_columns_list = [{"is_cancel": True} for i in primary_key_list]
+        attribute_columns_list = [{"is_read": False} for i in primary_key_list]
         OTS().update_list("user_message_table", primary_key_list, attribute_columns_list)
 
     def get_feed_list(self):

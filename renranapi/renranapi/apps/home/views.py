@@ -70,6 +70,7 @@ class ArticleListAPIView(ListAPIView):
             size = int(self.request.query_params.get("size")) or self.pagination_class.page_size
             client = OTS()
             ret = client.get_list("user_message_table",start_key,end_key,limit=size, cond=cond)
+            print(ret)
             if ret["status"]:
                 for item in ret["data"]:
                     message_list.append(item["message_id"])

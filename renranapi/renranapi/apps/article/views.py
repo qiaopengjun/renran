@@ -12,6 +12,8 @@ from users.models import User
 from renranapi.utils.tablestore import OTS
 from renranapi.settings import constants
 from renranapi.utils.tablestore import *
+from rest_framework.viewsets import ViewSet
+from rest_framework.decorators import action
 
 
 # Create your views here.
@@ -358,3 +360,66 @@ class FocusAPIView(APIView):
             return Response({"detail": "%s失败！" % message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response({"detail": "%s成功！" % message})
+
+
+class UserArticleAPIView(ViewSet):
+    permission_classes = [IsAuthenticated]
+    """用户和文章之间的交互行为记录api"""
+    client = OTS()
+
+    def check_params(self):
+        user = self.request.user
+        pk = int(self.kwargs.get("pk"))
+        try:
+            article = Article.objects.get(pk=pk, is_deleted=False, is_show=True, is_public=True)
+        except Article.DoesNotExist:
+            return Response({"detail": "当前文章不存在!"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 如果用户是作者，则不需要记录
+        if article.user.id == user.id:
+            return Response({"detail": "当前用户是作者！"}, status=status.HTTP_400_BAD_REQUEST)
+
+        primary_key = {"id": constants.LOG_TABLE_ID, "user_id": user.id, "message_id": pk}
+        ret = self.client.get_row("user_message_log_table", primary_key)
+
+        return user, primary_key, ret
+
+    @action(methods=["get"], detail=True)
+    def read(self, request, pk):
+        response = self.check_params()
+        if isinstance(response, Response):
+            return response
+        user, primary_key, ret = response
+        if ret[0] and len(ret[1]) < 1:
+            attribute_columns = {
+                "is_read": 1,
+                "is_comment": 0,
+                "is_reward": 0,
+                "is_like": 0,
+                "timestamp": datetime.now().timestamp(),
+            }
+            self.client.put_row("user_message_log_table", primary_key, attribute_columns)
+
+        return Response("ok")
+
+    @action(methods=["get"], detail=True)
+    def status(self, request, pk):
+        """添加评论，点赞等行为"""
+        # todo 收藏
+        response = self.check_params()
+        if isinstance(response, Response):
+            return response
+        user, primary_key, ret = response
+        status_type = request.query_params.get("type")
+        if status_type not in ("is_comment", "is_like"):
+            return Response({"detail": "参数有误，无法添加行为记录"}, status=status.HTTP_400_BAD_REQUEST)
+        if ret[0] and len(ret[1]) > 0:
+            attribute_columns = {
+                status_type: 1,
+                "timestamp": datetime.now().timestamp(),
+            }
+            self.client.update_row("user_message_log_table", primary_key, attribute_columns)
+        else:
+            return Response({"detail": "当前用户没有阅读文章的记录，无法添加行为记录"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"detail": "ok"})
