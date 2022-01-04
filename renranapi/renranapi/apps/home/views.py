@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from rest_framework.generics import ListAPIView
 from .models import Banner, Nav
-from .serializers import BannerModelSerializer, NavModelSerializer
+from .serializers import BannerModelSerializer, NavModelSerializer, ArticleModelSerializer
 from renranapi.settings import constants
 from django.utils import timezone as datetime
+from article.models import Article
+from .paginations import HomeArticlePageNumberPagination
 
 """
 注意：开发中绝对不能把当前时间now写在视图方法外面或者作为类属性的值,
@@ -43,3 +45,11 @@ class FooterNavListAPIView(ListAPIView):
     queryset = Nav.objects.filter(is_show=True, pid=None, is_deleted=False, position=2).order_by("orders", "id")[
                :constants.FOOTER_NAV_LENGTH]
     serializer_class = NavModelSerializer
+
+
+class ArticleListAPIView(ListAPIView):
+    serializer_class = ArticleModelSerializer
+    queryset = Article.objects.filter(is_public=True, is_show=True, is_deleted=False).order_by("-reward_count",
+                                                                                               "-comment_count",
+                                                                                               "-like_count", "-id")
+    pagination_class = HomeArticlePageNumberPagination
