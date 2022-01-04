@@ -32,14 +32,6 @@
                     <span v-if="article.like_count>0"><img src="/static/image/like.svg" alt=""> {{ article.like_count }}</span>
                     <span v-if="article.reward_count>0"><img src="/static/image/shang.svg"
                                                              alt=""> {{ article.reward_count }}</span>
-                    <!--                    <span class="jsd-meta">-->
-                    <!--                      <img src="/static/image/paid1.svg" alt=""> 4.8-->
-                    <!--                    </span>-->
-                    <!--                    <a class="nickname" target="_blank" href="">上班族也健身</a>-->
-                    <!--                    <a target="_blank" href="">-->
-                    <!--                      <img src="/static/image/comment.svg" alt=""> 4-->
-                    <!--                    </a>-->
-                    <!--                    <span><img src="/static/image/like.svg" alt=""> 31</span>-->
                   </div>
                 </div>
               </li>
@@ -168,7 +160,6 @@ export default {
         this.is_send_ajax = false;
         // this.$axios.get(`${this.$settings.Host}/push/article/`).then(response => {
         //   this.article_list = response.data.results;
-        //   console.log(response.data)
       }).catch(error => {
         this.$message.error("网络异常,无法获取文章列表内容!");
       });
