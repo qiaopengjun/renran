@@ -89,15 +89,17 @@ class Article(BaseModel):
 
     def cancel_push_feed(self):
         # 取消推送记录
-        # 把推送数据填写到同步库中
-        primary_key_list = self.get_feed_list()  # 查询当前文章的所有推送记录 article
-        print("取消文章%d的feed推送" % self.id)
-        print(primary_key_list)
+        # 查询当前文章的所有推送记录
+        start_key = {'id': 1, 'user_id': INF_MIN, 'sequence_id': INF_MIN, 'message_id': INF_MIN}
+        end_key = {'id': 1, 'user_id': INF_MAX, 'sequence_id': INF_MAX, 'message_id': INF_MAX}
+        print(self.id)
+        cond = SingleColumnCondition("message_id", self.id, ComparatorType.EQUAL)
+        ret = OTS().get_list("user_message_table", start_key, end_key, cond=cond)
+        if ret["status"]:
+            primary_key_list = ret["data"]
         if len(primary_key_list) < 1:
             return False
-
-        # attribute_columns_list = [{"is_cancel": True} for i in primary_key_list]
-        attribute_columns_list = [{"is_read": False} for i in primary_key_list]
+        attribute_columns_list = [{"is_cancel": True} for i in primary_key_list]
         OTS().update_list("user_message_table", primary_key_list, attribute_columns_list)
 
     def get_feed_list(self):

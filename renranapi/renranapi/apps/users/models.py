@@ -79,17 +79,20 @@ class User(AbstractUser):
         columns_to_get = ["is_read", "is_comment", "is_reward", "is_like"]
         timestamp = datetime.now().timestamp() - 15 * 24 * 60 * 60
         limit = 50
+        # 与用户2有相同浏览历史的用户列表
         user_list = set()
+        # 保存用户2看过的文章列表
+        message_list = []
         for log_item in log_list:
+            message_list.append(log_item["message_id"])
             cond = CompositeColumnCondition(LogicalOperator.AND)
             cond.add_sub_condition(SingleColumnCondition("timestamp", timestamp, ComparatorType.GREATER_EQUAL))
             cond.add_sub_condition(SingleColumnCondition("message_id", log_item["message_id"], ComparatorType.EQUAL))
             ret = OTS().get_list("user_message_log_table", start_key, end_key, limit=limit,
                                  columns_to_get=columns_to_get, cond=cond)
-            print(f"ret{ret}")
             if ret["status"]:
                 for data in ret["data"]:
                     user_list.add(data["user_id"])
         print(f"user_list{user_list}")
 
-        return list(user_list)
+        return list(user_list), message_list

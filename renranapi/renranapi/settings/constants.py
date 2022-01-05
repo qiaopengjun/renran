@@ -17,3 +17,8 @@ RELATION_TABLE_ID = 1   # 关系表的分区键
 MESSAGE_TABLE_ID = 1   # 同步库的分区键
 # 行为日志的分区键
 LOG_TABLE_ID = 1
+# 首页文章推荐度
+CF_READ = 1     # 阅读文章的推荐度
+CF_LIKE = 2     # 点赞文章的推荐度
+CF_COMMENT = 5   # 评论文章的推荐度
+CF_REWARD = 10  # 打赏文章的推荐度
