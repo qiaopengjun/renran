@@ -14,7 +14,9 @@
               <!--              <a class="_1OhGeD" href="/u/a70487cda447" target="_blank" rel="noopener noreferrer"><img class="_13D2Eh" src="https://upload.jianshu.io/users/upload_avatars/18529254/.png?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96/format/webp" alt=""/></a>-->
               <div style="margin-left: 8px;">
                 <div class="_3U4Smb">
-                  <span class="FxYr8x"><router-link class="_1OhGeD" to="/user">{{ article.user.nickname ? article.user.nickname : article.user.username }}</router-link></span>
+                  <span class="FxYr8x"><router-link class="_1OhGeD" to="/user">{{
+                      article.user.nickname ? article.user.nickname : article.user.username
+                    }}</router-link></span>
                   <!--                  <span class="FxYr8x"><a class="_1OhGeD" href="/u/a70487cda447" target="_blank" rel="noopener noreferrer">書酱</a></span>-->
                   <!--                  <button data-locale="zh-CN" type="button" class="_3kba3h _1OyPqC _3Mi9q9 _34692-"><span>关注</span></button>-->
                   <button data-locale="zh-CN" type="button" class="_3kba3h _1OyPqC _3Mi9q9 _34692-"
@@ -402,6 +404,8 @@ export default {
         }
       }).then(response => {
         this.focus_status = response.data.status;
+        // 5s以后，记录用户的阅读行为
+        setTimeout(this.add_read_log, 5000);
       }).catch(error => {
         this.$message.error(error.response.data.detail);
       });
@@ -441,6 +445,14 @@ export default {
         this.$message.error(error.response.data.detail);
       });
 
+    },
+    add_read_log() {
+      // 记录用户的阅读行为
+      this.$axios.get(`${this.$settings.Host}/article/log/${this.article.id}/read/`, {
+        headers: {
+          Authorization: "jwt " + this.token
+        }
+      });
     },
     format(time) {
       time = new Date(time);

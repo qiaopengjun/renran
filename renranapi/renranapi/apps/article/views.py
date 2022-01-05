@@ -400,7 +400,7 @@ class UserArticleAPIView(ViewSet):
             }
             self.client.put_row("user_message_log_table", primary_key, attribute_columns)
 
-        return Response("ok")
+        return Response({"detail": "ok"})
 
     @action(methods=["get"], detail=True)
     def status(self, request, pk):

@@ -8,6 +8,8 @@ from django.conf import settings
 from article.models import Article
 from alipay import AliPay
 from .models import Reward
+from renranapi.utils.tablestore import *
+from renranapi.settings import constants
 
 
 # Create your views here.
@@ -115,6 +117,7 @@ class AlipayResultAPIView(APIView):
 
     def get(self, request):
         """提供给客户端查询订单支付结果"""
+        # 因为是内网支付宝访问不进来 目前只能手动在数据库修改状态
         out_trade_no = request.query_params.get("out_trade_no")
         try:
             reward = Reward.objects.get(out_trade_no=out_trade_no)
@@ -164,6 +167,14 @@ class AlipayResultAPIView(APIView):
         # 增加文章的赞赏人数
         reward.article.reward_count += 1
         reward.article.save()
+
+        # 记录用户的赞赏行为
+        primary_key = {"id": constants.LOG_TABLE_ID, "user_id": reward.user.id, "message_id": reward.article.id}
+        attribute_columns = {
+            "is_reward": 1,
+            "timestamp": datetime.now().timestamp(),
+        }
+        OTS().update_row("user_message_log_table", primary_key, attribute_columns)
 
     def get_alipay(self):
         # 读取秘钥文件的内容

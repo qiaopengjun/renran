@@ -130,7 +130,7 @@ class OTS(object):
             # 调用get_row接口查询
             consumed, return_row, next_token = self.client.get_row(table_name, primary_key_list, columns_to_get,
                                                                    column_filter, 1)
-            print(return_row)
+
             data = {}
             if return_row is not None:
                 for att in return_row.primary_key:

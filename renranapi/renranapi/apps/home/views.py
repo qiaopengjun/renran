@@ -57,10 +57,12 @@ class ArticleListAPIView(ListAPIView):
     def get_queryset(self):
         user = self.request.user
         queryset = []
-        if isinstance(self.request.user,User):
+        if isinstance(self.request.user, User):
             """登录"""
-            start_key = {"id": constants.MESSAGE_TABLE_ID, "user_id":user.id, "sequence_id": INF_MIN, "message_id": INF_MIN}
-            end_key   = {"id": constants.MESSAGE_TABLE_ID, "user_id":user.id, "sequence_id": INF_MAX, "message_id": INF_MAX}
+            start_key = {"id": constants.MESSAGE_TABLE_ID, "user_id": user.id, "sequence_id": INF_MIN,
+                         "message_id": INF_MIN}
+            end_key = {"id": constants.MESSAGE_TABLE_ID, "user_id": user.id, "sequence_id": INF_MAX,
+                       "message_id": INF_MAX}
             cond = CompositeColumnCondition(LogicalOperator.AND)
             cond.add_sub_condition(SingleColumnCondition("is_cancel", False, ComparatorType.EQUAL))
             cond.add_sub_condition(SingleColumnCondition("is_read", False, ComparatorType.EQUAL))
@@ -69,8 +71,7 @@ class ArticleListAPIView(ListAPIView):
             # 接受客户端执行返回的单页数据量，如果客户端没有指定，则默认采用分页器的单页数据量
             size = int(self.request.query_params.get("size")) or self.pagination_class.page_size
             client = OTS()
-            ret = client.get_list("user_message_table",start_key,end_key,limit=size, cond=cond)
-            print(ret)
+            ret = client.get_list("user_message_table", start_key, end_key, limit=size, cond=cond)
             if ret["status"]:
                 for item in ret["data"]:
                     message_list.append(item["message_id"])
@@ -85,7 +86,8 @@ class ArticleListAPIView(ListAPIView):
                         message_list.append(item["message_id"])
                         primary_list.append(item)
 
-                queryset = Article.objects.filter(is_public=True, is_show=True, is_deleted=False, pk__in=message_list).order_by("-id")
+                queryset = Article.objects.filter(is_public=True, is_show=True, is_deleted=False,
+                                                  pk__in=message_list).order_by("-id")
 
                 # 记录推送状态到同步库中
                 page = self.request.query_params.get("page")
@@ -95,14 +97,14 @@ class ArticleListAPIView(ListAPIView):
 
                 update_primary_list = []
                 attribute_columns_list = []
-                article_list = queryset[(page-1)*size:page*size]
+                article_list = queryset[(page - 1) * size:page * size]
                 for article in article_list:
                     for data in primary_list:
                         if data["user_id"] == user.id and data["message_id"] == article.id:
                             update_primary_list.append(data)
                             attribute_columns_list.append({"is_read": True})
 
-                client.update_list("user_message_table", update_primary_list,attribute_columns_list)
+                client.update_list("user_message_table", update_primary_list, attribute_columns_list)
 
             if len(queryset) < 1:
                 """进行智能推荐"""

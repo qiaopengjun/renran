@@ -10,7 +10,7 @@ class UserModelAdmin(UserAdmin, admin.ModelAdmin):
     # # fieldsets 和 add_fieldsets 都在从UserAdmin中复制粘贴过来，重写加上自己需要的字段的。
     # 更新数据时的表单配置项
     fieldsets = (
-        (None, {'fields': ('username', 'password', "avatar")}),
+        (None, {'fields': ('username', 'password', "avatar", "nickname")}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
         (_('Permissions'), {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
@@ -25,7 +25,7 @@ class UserModelAdmin(UserAdmin, admin.ModelAdmin):
         }),
         ('可选项', {
             'classes': ('collapse',),  # 折叠样式
-            'fields': (),
+            'fields': ("nickname",),
         }),
     )
 
