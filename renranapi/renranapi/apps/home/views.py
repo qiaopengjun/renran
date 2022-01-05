@@ -108,7 +108,18 @@ class ArticleListAPIView(ListAPIView):
 
             if len(queryset) < 1:
                 """进行智能推荐"""
-                print("智能推荐")
+                # 1. 获取当前登录用户近3个月的行为记录
+                current_user_log_list = user.get_user_log()
+
+                # 2. 把阅读过与当前登录用户一样的文章的所有关联用户查询出来
+                user_list = user.get_log_list(current_user_log_list)
+
+                # 3. 获取每个关联用户近期的行为记录
+                for user_id in user_list:
+                    user_log_list = user.get_user_log(user_id)
+                    print(f"user_log_list{user_log_list}")
+
+                # 4. 进行统计和计算获取推荐列表
         else:
             queryset = Article.objects.filter(is_public=True, is_show=True, is_deleted=False).order_by("-reward_count",
                                                                                                        "-comment_count",

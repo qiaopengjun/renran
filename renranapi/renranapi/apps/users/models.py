@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.safestring import mark_safe
+from renranapi.utils.tablestore import *
+from renranapi.settings import constants
+from django.utils import timezone as datetime
 
 # Create your models here.
 # AbstractUser 是django内部的auth模块里面声明的抽象模型，
@@ -45,3 +48,48 @@ class User(AbstractUser):
     avatar_small.short_description = "个人头像(50x50)"
     avatar_small.allow_tags = True
     avatar_small.admin_order_field = "avatar"
+
+    def get_user_log(self, user_id=None, limit=50):
+        """获取指定用户最近3个月的行为记录"""
+        if user_id is None:
+            user_id = self.id
+        start_key = {"id": constants.LOG_TABLE_ID, "user_id": user_id, "message_id": INF_MIN}
+        end_key = {"id": constants.LOG_TABLE_ID, "user_id": user_id, "message_id": INF_MAX}
+        columns_to_get = ["is_read", "is_comment", "is_reward", "is_like"]
+        timestamp = datetime.now().timestamp() - 3 * 30 * 24 * 60 * 60
+        cond = SingleColumnCondition("timestamp", timestamp, ComparatorType.GREATER_EQUAL)
+        ret = OTS().get_list("user_message_log_table", start_key, end_key, limit=limit, columns_to_get=columns_to_get,
+                             cond=cond)
+        log_list = []
+        if ret["status"]:
+            """查询成功"""
+            log_list.extend(ret["data"])
+            while ret["token"] and len(log_list) < limit:
+                ret = OTS().get_list("user_message_log_table", start_key, end_key, limit=limit,
+                                     columns_to_get=columns_to_get, cond=cond)
+                if ret["status"]:
+                    log_list.extend(ret["data"])
+        print(f"log_list{log_list}")
+        return log_list
+
+    def get_log_list(self, log_list):
+
+        start_key = {"id": constants.LOG_TABLE_ID, "user_id": INF_MIN, "message_id": INF_MIN}
+        end_key = {"id": constants.LOG_TABLE_ID, "user_id": INF_MAX, "message_id": INF_MAX}
+        columns_to_get = ["is_read", "is_comment", "is_reward", "is_like"]
+        timestamp = datetime.now().timestamp() - 15 * 24 * 60 * 60
+        limit = 50
+        user_list = set()
+        for log_item in log_list:
+            cond = CompositeColumnCondition(LogicalOperator.AND)
+            cond.add_sub_condition(SingleColumnCondition("timestamp", timestamp, ComparatorType.GREATER_EQUAL))
+            cond.add_sub_condition(SingleColumnCondition("message_id", log_item["message_id"], ComparatorType.EQUAL))
+            ret = OTS().get_list("user_message_log_table", start_key, end_key, limit=limit,
+                                 columns_to_get=columns_to_get, cond=cond)
+            print(f"ret{ret}")
+            if ret["status"]:
+                for data in ret["data"]:
+                    user_list.add(data["user_id"])
+        print(f"user_list{user_list}")
+
+        return list(user_list)
