@@ -9,12 +9,16 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+import os
+import sys
+import datetime
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# 把网站子应用所在目录设置为了导包路径
+sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -23,27 +27,51 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-9%9cr%naguf%27q!n+@2c(#(u7$k40lw0(j7gs#ngs-5knczz8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['api.renran.fuguang.top']
+# ALLOWED_HOSTS = [
+#     '0.0.0.0',
+#     '192.168.182.131',
+#     '127.0.0.1',
+#     'api.renran.cn'
+# ]
 
 # Application definition
 
 INSTALLED_APPS = [
+    'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'corsheaders',
+    'rest_framework',
+    'drf_yasg',
+
+    'users',
+    'oauth',
+    'home',
+    'article',
+    'payments',
+    'store',  # 用于演示tableStore，后续删除掉即可
 ]
 
+# CORS组的配置信息
+CORS_ORIGIN_WHITELIST = (
+    'http://renran.fuguang.top',
+)
+CORS_ALLOW_CREDENTIALS = False  # 不允许ajax跨域请求时携带cookie
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -69,17 +97,57 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'renranapi.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "HOST": "47.94.193.33",  # 数据库所在地址【公网地址】
+        "PORT": 3306,
+        "USER": "root",
+        "PASSWORD": "123456",
+        "NAME": "renran",  # 数据库名称
     }
 }
 
+# 设置redis缓存 【地址改成公网地址】
+CACHES = {
+    # 默认缓存
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        # 项目上线时,需要调整这里的路径
+        "LOCATION": "redis://47.94.193.33:6379/0",
+
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    # 提供给admin或者admin的session存储
+    "session": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://47.94.193.33:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    # 提供存储短信验证码
+    "sms_code": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://47.94.193.33:6379/2",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+# 设置admin用户登录时,登录信息session保存到redis
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "session"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -99,25 +167,192 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+# LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-Hans'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
-USE_TZ = True
-
+USE_TZ = True  # 启动时区转换
+# USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+# STATIC_URL = 'static/'
+
+# 访问静态文件的url地址前缀
+STATIC_URL = '/static/'
+# 设置django的静态文件目录
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static")
+    # os.path.join(os.path.dirname(BASE_DIR), 'static')
+]
+
+# 静态文件存储目录[将来收集命令执行了以后，在下面保存]
+# STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static')
+# 收集到的静态文件存储目录
+STATIC_ROOT = BASE_DIR.parent / 'static'
+
+# 项目中存储上传文件的根目录[暂时配置]，注意，uploads目录需要手动创建否则上传文件时报错
+MEDIA_ROOT = os.path.join(BASE_DIR, "uploads")
+# 访问上传文件的url地址前缀
+MEDIA_URL = "/media/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# 日志配置
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {  # 日志的处理格式
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(lineno)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(module)s %(lineno)d %(message)s'
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            # 日志位置,日志文件名,日志保存目录必须手动创建
+            'filename': os.path.join(os.path.dirname(BASE_DIR), "logs/renran.log"),
+            # 单个日志文件的最大值,这里我们设置300M
+            'maxBytes': 300 * 1024 * 1024,
+            # 备份日志文件的数量,设置最大日志数量为10
+            'backupCount': 10,
+            # 日志格式:详细格式
+            'formatter': 'verbose'
+        },
+    },
+    # 日志对象
+    'loggers': {
+        'django': {  # 固定，将来django内部也会有异常的处理，只会调用django下标的日志对象
+            'handlers': ['console', 'file'],
+            'propagate': True,  # 是否让日志信息继续冒泡给其他的日志处理系统
+        },
+    }
+}
+
+REST_FRAMEWORK = {
+    # 异常处理
+    'EXCEPTION_HANDLER': 'renranapi.utils.exceptions.custom_exception_handler',
+    # 认证方式
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 新增jwt认证，注意不能删除session认证，因我们后面的admin运营站点还是使用的session认证
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'
+}
+# jwt的配置选项
+JWT_AUTH = {
+    # jwt token的有效期，默认是7天
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
+    # 'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+    # 登录成功以后的自定义相应内容
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',
+}
+
+# 自定义的用户模型类不能直接被Django的认证系统所识别，需要在配置文件中告知Django认证系统使用我们自定义的模型类
+# AUTH_USER_MODEL 参数的设置以点.来分隔，表示应用名.模型类名
+AUTH_USER_MODEL = 'users.User'
+
+# 告知Django使用我们自定义的认证后端
+AUTHENTICATION_BACKENDS = [
+    'users.utils.CustomAuthUserModelBackend',
+]
+
+# 腾讯防水墙验证码配置 【换成公司的秘钥信息】
+TENCENT_CAPTCHA = {
+    "GATEWAY": "https://ssl.captcha.qq.com/ticket/verify",
+    "APPID": "2060272005",
+    "App_Secret_Key": "05VYXEWy5u8qALeC8BexUOA**",
+}
+
+# 短信配置 【换成公司的秘钥信息】
+SMS = {
+    # 容联云通讯分配的主账号ID
+    "accId": '8aaf07087ce03b67017d141ad4380ba6',
+    # 容联云通讯分配的主账号TOKEN
+    "accToken": 'b3f15b8095b34862b4e9f82c234ae477',
+    # 容联云通讯分配的应用ID
+    "appId": '8aaf07087ce03b67017d141ad5610bad',
+    # 容联云通讯创建的模板,1表示使用测试模板
+    "tid": 1
+}
+
+# 邮箱的配置信息 【换成公司的秘钥信息】
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 25
+# 发送邮件的邮箱
+EMAIL_HOST_USER = 'qpj99992021@163.com'
+# 在邮箱中设置的客户端授权密码
+EMAIL_HOST_PASSWORD = 'EWUOSFRMTZUPBESP'  # zwisiplqfdeabjcc
+# 收件人看到的发件人
+EMAIL_FROM = 'renran<17260808696@163.com>'
+
+CLIENT_HOST = "http://renran.fuguang.top"
+
+# QQ登录配置参数 【换成公司的秘钥信息】
+QQ_CONNECT = {
+    "app_id": "101403367",
+    "app_key": "93112df14c10d6fde74baa62f5de95ab",
+    "redirect_uri": "http://renran.fuguang.top/oauth_callback.html",
+    "state": "/",  # 用于保存登录成功后的跳转页面路径,查询字符串的参数信息,
+}
+
+# django文件存储
+DEFAULT_FILE_STORAGE = 'renranapi.utils.fastdfs.fdfs_storage.FastDFSStorage'
+
+# FastDFS 【换成公网IP，端口还是8888】
+FDFS_URL = 'http://47.94.193.33:8888/'  # 访问图片的路径域名 ip地址修改为自己机器的ip地址
+FDFS_CLIENT_CONF = os.path.join(BASE_DIR, 'utils/fastdfs/client.conf')
+
+# 支付宝配置 【换成公司的配置信息】
+ALIPAY = {
+    # "gateway_url": "https://openapi.alipay.com/gateway.do?", # 真实支付宝网关地址
+    "gateway_url": "https://openapi.alipaydev.com/gateway.do?",  # 沙箱支付宝网关地址
+    "appid": "2021000118657978",  # 应用ID
+    "app_notify_url": None,  # 支付成功以后的回调地址[这里是全部接口的回调地址，不需要配置]
+    "app_private_key_path": os.path.join(BASE_DIR, "apps/payments/keys/app_private_key.pem"),
+    "alipay_public_key_path": os.path.join(BASE_DIR, "apps/payments/keys/alipay_public_key.pem"),
+    "sign_type": "RSA2",  # 秘钥类型
+    "debug": False,
+    "return_url": "http://renran.fuguang.top/payments/alipay",  # 同步回调地址
+    "notify_url": "http://api.renran.fuguang.top/payments/alipay",  # 异步结果通知
+}
+
+# tablestore 【换成公司的配置信息】
+# 应用ID
+OTS_ID = "LTAI5tK52iM391jcoq9QjQLw"
+# 应用密钥
+OTS_SECRET = "VlyEUuhPtHzEV5VGvV2AtLa5ipINA8"
+# 实例名称
+OTS_INSTANCE = "renranpy36"
+# 访问实例的公网地址
+OTS_ENDPOINT = "https://renranpy36.cn-beijing.ots.aliyuncs.com"
+

@@ -190,7 +190,13 @@ STATIC_URL = '/static/'
 # 设置django的静态文件目录
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
+    # os.path.join(os.path.dirname(BASE_DIR), 'static')
 ]
+
+# 静态文件存储目录[将来收集命令执行了以后，在下面保存]
+# STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static/')
+# 收集到的静态文件存储目录
+STATIC_ROOT = BASE_DIR.parent / 'static'
 
 # 项目中存储上传文件的根目录[暂时配置]，注意，uploads目录需要手动创建否则上传文件时报错
 MEDIA_ROOT = os.path.join(BASE_DIR, "uploads")
