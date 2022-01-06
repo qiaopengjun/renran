@@ -10,6 +10,7 @@ import Writer from "../components/Writer";
 import PostArticle from "../components/PostArticle"
 import Article from "../components/Article";
 import Alipay from "../components/Alipay"
+import Info from "../components/Info"
 
 Vue.use(Router)
 
@@ -31,6 +32,15 @@ export default new Router({
        path:"/home",
        component:Home,
      },
+     {
+      meta: {
+        title: "荏苒项目-个人中心", //配置title
+        keepAlive: true //是否缓存
+      },
+      name: "Info",
+      path: "/users",
+      component: Info,
+    },
     {
       meta: {
         title: "荏苒项目-登录页面", //配置title
